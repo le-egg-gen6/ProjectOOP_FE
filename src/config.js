@@ -5,11 +5,6 @@ export const BE_PORT = 6789;
 
 export const BASE_URL = `http://localhost:${BE_PORT}/api/v1`;
 
-export const S3_BUCKET_NAME = 'codingmonk';
-export const AWS_ACCESS_KEY = 'AKIARPJQ4HSYLBIK2TDE';
-export const AWS_SECRET_ACCESS_KEY = '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';
-export const AWS_S3_REGION = 'ap-south-1'; // eg. ap-south-1
-
 export const defaultSettings = {
   themeMode: "light",
   themeDirection: "ltr",
