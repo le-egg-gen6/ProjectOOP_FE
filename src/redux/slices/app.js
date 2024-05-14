@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "../../utils/axios";
 // import S3 from "../../utils/s3";
-import {v4} from 'uuid';
+import { v4 } from 'uuid';
 import S3 from "../../utils/s3";
 import { S3_BUCKET_NAME } from "../../config";
 // ----------------------------------------------------------------------
@@ -12,7 +12,7 @@ const initialState = {
     open: false,
     type: "CONTACT", // can be CONTACT, STARRED, SHARED
   },
-  isLoggedIn: true,
+  isLoggedIn: false,
   tab: 0, // [0, 1, 2, 3]
   snackbar: {
     open: null,
@@ -91,20 +91,18 @@ export const closeSnackBar = () => async (dispatch, getState) => {
   dispatch(slice.actions.closeSnackBar());
 };
 
-export const showSnackbar =
-  ({ severity, message }) =>
-  async (dispatch, getState) => {
-    dispatch(
-      slice.actions.openSnackBar({
-        message,
-        severity,
-      })
-    );
+export const showSnackbar = ({ severity, message }) => async (dispatch, getState) => {
+  dispatch(
+    slice.actions.openSnackBar({
+      message,
+      severity,
+    })
+  );
 
-    setTimeout(() => {
-      dispatch(slice.actions.closeSnackBar());
-    }, 4000);
-  };
+  setTimeout(() => {
+    dispatch(slice.actions.closeSnackBar());
+  }, 4000);
+};
 
 export function ToggleSidebar() {
   return async (dispatch, getState) => {
@@ -261,16 +259,16 @@ export const UpdateUserProfile = (formValues) => {
 
     const key = v4();
 
-    try{
+    try {
       S3.getSignedUrl(
         "putObject",
         { Bucket: S3_BUCKET_NAME, Key: key, ContentType: `image/${file.type}` },
         async (_err, presignedURL) => {
           await fetch(presignedURL, {
             method: "PUT",
-  
+
             body: file,
-  
+
             headers: {
               "Content-Type": file.type,
             },
@@ -278,11 +276,11 @@ export const UpdateUserProfile = (formValues) => {
         }
       );
     }
-    catch(error) {
+    catch (error) {
       console.log(error);
     }
 
-    
+
 
     axios
       .patch(

@@ -18,8 +18,6 @@ import { faker } from "@faker-js/faker";
 import useResponsive from "../../hooks/useResponsive";
 import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
-import { StartAudioCall } from "../../redux/slices/audioCall";
-import { StartVideoCall } from "../../redux/slices/videoCall";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -135,19 +133,6 @@ const ChatHeader = () => {
             alignItems="center"
             spacing={isMobile ? 1 : 3}
           >
-            <IconButton onClick={() => {
-              dispatch(StartVideoCall(current_conversation.user_id));
-            }}>
-              <VideoCamera />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                
-                dispatch(StartAudioCall(current_conversation.user_id));
-              }}
-            >
-              <Phone />
-            </IconButton>
             {!isMobile && (
               <IconButton>
                 <MagnifyingGlass />

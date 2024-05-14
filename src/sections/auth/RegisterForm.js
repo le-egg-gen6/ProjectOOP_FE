@@ -16,27 +16,32 @@ import { RegisterUser } from "../../redux/slices/auth";
 
 export default function AuthRegisterForm() {
   const dispatch = useDispatch();
-  const {isLoading} = useSelector((state) => state.auth);
+  const { isLoading } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
 
-  const LoginSchema = Yup.object().shape({
-    firstName: Yup.string().required("First name required"),
-    lastName: Yup.string().required("Last name required"),
+  const RegisterSchema = Yup.object().shape({
+    firstName: Yup.string()
+      .required("First name required"),
+    lastName: Yup.string()
+      .required("Last name required"),
     email: Yup.string()
       .required("Email is required")
       .email("Email must be a valid email address"),
+    username: Yup.string()
+      .required("Username required"),
     password: Yup.string().required("Password is required"),
   });
 
   const defaultValues = {
-    firstName: "",
-    lastName: "",
-    email: "demo@tawk.com",
+    firstName: "tao la",
+    lastName: "wibu",
+    email: "wibu@gmail.com",
+    username: "wjbu",
     password: "demo1234",
   };
 
   const methods = useForm({
-    resolver: yupResolver(LoginSchema),
+    resolver: yupResolver(RegisterSchema),
     defaultValues,
   });
 
@@ -74,6 +79,8 @@ export default function AuthRegisterForm() {
         </Stack>
 
         <RHFTextField name="email" label="Email address" />
+
+        <RHFTextField name="username" label="Username"/>
 
         <RHFTextField
           name="password"

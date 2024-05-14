@@ -1,13 +1,20 @@
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, Navigate } from "react-router-dom";
 // sections
 import { Stack, Typography, Link } from "@mui/material";
 import AuthSocial from "../../sections/auth/AuthSocial";
-import Login from "../../sections/auth/LoginForm";
 import VerifyForm from "../../sections/auth/VerifyForm";
+import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
+
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  
+  if (!isLoggedIn) {
+    return <Navigate to={"/auth/login"} />;
+  }
+
   return (
     <>
       <Stack spacing={2} sx={{ mb: 5, position: "relative" }}>
@@ -21,6 +28,7 @@ export default function LoginPage() {
       </Stack>
       {/* Form */}
       <VerifyForm />
+      <AuthSocial />
     </>
   );
 }

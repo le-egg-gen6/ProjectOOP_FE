@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Stack } from "@mui/material";
 import { Navigate, Outlet } from "react-router-dom";
 
-import Logo from "../../assets/Images/logo.ico";
+import Logo from "../../assets/images/logo.ico";
 import { useSelector } from "react-redux";
 
 const AuthLayout = () => {

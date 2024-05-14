@@ -6,7 +6,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import ChatComponent from "./Conversation";
 import Chats from "./Chats";
 import Contact from "../../sections/dashboard/Contact";
-import NoChat from "../../assets/Illustration/NoChat";
+import NoChat from "../../assets/illustration/NoChat";
 import { useSelector } from "react-redux";
 import StarredMessages from "../../sections/dashboard/StarredMessages";
 import Media from "../../sections/dashboard/SharedMessages";

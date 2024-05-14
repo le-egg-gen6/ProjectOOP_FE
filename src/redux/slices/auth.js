@@ -9,10 +9,11 @@ const initialState = {
   isLoggedIn: false,
   token: "",
   isLoading: false,
+  error: false,
   user: null,
   user_id: null,
   email: "",
-  error: false,
+  isVerified: false,
 };
 
 const slice = createSlice({
@@ -61,11 +62,11 @@ export function NewPassword(formValues) {
       .then(function (response) {
         console.log(response);
         dispatch(
-            slice.actions.logIn({
-              isLoggedIn: true,
-              token: response.data.token,
-            })
-          );
+          slice.actions.logIn({
+            isLoggedIn: true,
+            token: response.data.token,
+          })
+        );
         dispatch(
           showSnackbar({ severity: "success", message: response.data.message })
         );
@@ -189,23 +190,35 @@ export function RegisterUser(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        dispatch(
-          slice.actions.updateRegisterEmail({ email: formValues.email })
-        );
+        const success = response.data.isError === 0;
+        if (success) {
+          dispatch(
+            slice.actions.updateRegisterEmail({ email: formValues.email })
+          );
 
-        dispatch(
-          showSnackbar({ severity: "success", message: response.data.message })
-        );
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: false })
-        );
-      })
-      .catch(function (error) {
-        console.log(error);
-        dispatch(showSnackbar({ severity: "error", message: error.message }));
-        dispatch(
-          slice.actions.updateIsLoading({ error: true, isLoading: false })
-        );
+          dispatch(
+            showSnackbar({ severity: "success", message: "Registered Successfully!" })
+          );
+
+          dispatch(
+            slice.actions.updateIsLoading({ isLoading: false, error: false })
+          );
+
+          dispatch(
+            slice.actions.logIn({
+              isLoggedIn: true,
+              token: response.data.token,
+              user_id: response.data.user_id,
+            })
+          )
+        } else {
+          dispatch(
+            showSnackbar({ severity: "error", message: response.data.errorMessage })
+          );
+          dispatch(
+            slice.actions.updateIsLoading({ error: true, isLoading: false })
+          );
+        }
       })
       .finally(() => {
         if (!getState().auth.error) {

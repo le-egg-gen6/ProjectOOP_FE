@@ -22,14 +22,14 @@ export default function AuthLoginForm() {
   const {isLoading} = useSelector((state) => state.auth);
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string()
-      .required("Email is required")
-      .email("Email must be a valid email address"),
-    password: Yup.string().required("Password is required"),
+    username: Yup.string()
+      .required("Username is required"),
+    password: Yup.string()
+      .required("Password is required"),
   });
 
   const defaultValues = {
-    email: "demo@tawk.com",
+    username: "wibu",
     password: "demo1234",
   };
 
@@ -67,7 +67,7 @@ export default function AuthLoginForm() {
           <Alert severity="error">{errors.afterSubmit.message}</Alert>
         )}
 
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="username" label="Username" />
 
         <RHFTextField
           name="password"

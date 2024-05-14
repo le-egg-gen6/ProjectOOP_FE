@@ -5,6 +5,7 @@ import { CaretLeft } from "phosphor-react";
 import AuthResetPasswordForm from "../../sections/auth/ResetPasswordForm";
 
 const ResetPassword = () => {
+
   return (
     <>
       <Stack spacing={2} sx={{ mb: 5, position: "relative" }}>
@@ -14,7 +15,7 @@ const ResetPassword = () => {
 
         <Typography sx={{ color: "text.secondary", mb: 5 }}>
           Please enter the email address associated with your account and We
-          will email you a link to reset your password.
+          will email you a link to reset your password
         </Typography>
       </Stack>
 
