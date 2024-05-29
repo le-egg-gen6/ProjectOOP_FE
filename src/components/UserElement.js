@@ -49,10 +49,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const UserElement = ({ img, firstName, lastName, online, _id }) => {
+const UserElement = ({ img, fullName, username, online, _id }) => {
   const theme = useTheme();
-
-  const name = `${firstName} ${lastName}`;
 
   return (
     <StyledChatBox
@@ -78,13 +76,14 @@ const UserElement = ({ img, firstName, lastName, online, _id }) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar alt={name} src={img} />
+              <Avatar alt={fullName} src={img} />
             </StyledBadge>
           ) : (
-            <Avatar alt={name} src={img} />
+            <Avatar alt={fullName} src={img} />
           )}
           <Stack spacing={0.3}>
-            <Typography variant="subtitle2">{name}</Typography>
+            <Typography variant="subtitle1">{fullName}</Typography>
+            <Typography variant="body3">{username}</Typography>
           </Stack>
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>

@@ -46,7 +46,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
   const dispatch = useDispatch();
-  const {room_id} = useSelector((state) => state.app);
+  const { room_id } = useSelector((state) => state.app);
   const selectedChatId = room_id?.toString();
 
   let isSelected = +selectedChatId === id;
@@ -60,7 +60,7 @@ const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
   return (
     <StyledChatBox
       onClick={() => {
-        dispatch(SelectConversation({room_id: id}));
+        dispatch(SelectConversation({ room_id: id }));
       }}
       sx={{
         width: "100%",
@@ -72,8 +72,8 @@ const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
             ? alpha(theme.palette.primary.main, 0.5)
             : theme.palette.primary.main
           : theme.palette.mode === "light"
-          ? "#fff"
-          : theme.palette.background.paper,
+            ? "#fff"
+            : theme.palette.background.paper,
       }}
       p={2}
     >
@@ -84,17 +84,14 @@ const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
       >
         <Stack direction="row" spacing={2}>
           {" "}
-          {online ? (
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar alt={name} src={img} />
-            </StyledBadge>
-          ) : (
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            variant="dot"
+          >
             <Avatar alt={name} src={img} />
-          )}
+          </StyledBadge>
+
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{name}</Typography>
             <Typography variant="caption">{truncateText(msg, 20)}</Typography>

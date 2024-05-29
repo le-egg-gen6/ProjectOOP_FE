@@ -20,8 +20,8 @@ const Profile = () => {
           sx={{
             overflowY: "scroll",
 
-            height: "100vh",
-            width: 320,
+            height: "100%",
+            width: 500,
             backgroundColor: (theme) =>
               theme.palette.mode === "light"
                 ? "#F8FAFF"
@@ -30,7 +30,7 @@ const Profile = () => {
             boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
           }}
         >
-          <Stack p={4} spacing={5}>
+          <Stack p={4} spacing={5} height="100px">
             {/* Header */}
             <Stack direction="row" alignItems={"center"} spacing={3}>
               <IconButton>
@@ -42,6 +42,7 @@ const Profile = () => {
 
             {/* Profile Edit Form */}
             <ProfileForm />
+            <Stack p={0.5}></Stack>
           </Stack>
         </Box>
 
@@ -49,14 +50,16 @@ const Profile = () => {
         <Box
           sx={{
             height: "100%",
-            width: "calc(100vw - 420px )",
+            width: "calc(100vw - 600px)",
             backgroundColor: (theme) =>
               theme.palette.mode === "light"
                 ? "#FFF"
                 : theme.palette.background.paper,
             borderBottom: "6px solid #0162C4",
           }}
-        ></Box>
+        >
+          
+        </Box>
       </Stack>
     </>
   );

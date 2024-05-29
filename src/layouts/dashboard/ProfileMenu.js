@@ -72,7 +72,7 @@ const ProfileMenu = () => {
                     }
                     else {
                       dispatch(LogoutUser());
-                      socket.emit("end", {user_id});
+                      // socket.emit("end", {user_id});
                     }
                   }}
                   sx={{ width: 100 }}

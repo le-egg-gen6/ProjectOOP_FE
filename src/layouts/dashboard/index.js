@@ -5,7 +5,7 @@ import useResponsive from "../../hooks/useResponsive";
 import SideNav from "./SideNav";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchUserProfile, SelectConversation, showSnackbar } from "../../redux/slices/app";
-import { socket, connectSocket } from "../../socket";
+import { socket, stompClient, connectSocket } from "../../socket";
 import {
   UpdateDirectConversation,
   AddDirectConversation,
@@ -14,8 +14,8 @@ import {
 
 const DashboardLayout = () => {
   const dispatch = useDispatch();
-  const {user_id} = useSelector((state) => state.auth);
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { user_id } = useSelector((state) => state.auth);
+  const { isLoggedIn, isVerified } = useSelector((state) => state.auth);
   const { conversations, current_conversation } = useSelector(
     (state) => state.conversation.direct_chat
   );
@@ -23,21 +23,13 @@ const DashboardLayout = () => {
   useEffect(() => {
     dispatch(FetchUserProfile());
   }, []);
-  
+
 
   useEffect(() => {
-    if (isLoggedIn) {
-      window.onload = function () {
-        if (!window.location.hash) {
-          window.location = window.location + "#loaded";
-          window.location.reload();
-        }
-      };
-
-      window.onload();
+    if (isLoggedIn && isVerified) {
 
       if (!socket) {
-        connectSocket(user_id);
+        connectSocket();
       }
 
       socket.on("new_message", (data) => {
@@ -73,48 +65,27 @@ const DashboardLayout = () => {
         }
         dispatch(SelectConversation({ room_id: data._id }));
       });
-
-      socket.on("new_friend_request", (data) => {
-        dispatch(
-          showSnackbar({
-            severity: "success",
-            message: "New friend request received",
-          })
-        );
-      });
-
-      socket.on("request_accepted", (data) => {
-        dispatch(
-          showSnackbar({
-            severity: "success",
-            message: "Friend Request Accepted",
-          })
-        );
-      });
-
-      socket.on("request_sent", (data) => {
-        dispatch(showSnackbar({ severity: "success", message: data.message }));
-      });
     }
 
     // Remove event listener on component unmount
     return () => {
-      socket?.off("new_friend_request");
-      socket?.off("request_accepted");
-      socket?.off("request_sent");
       socket?.off("start_chat");
       socket?.off("new_message");
     };
-  }, [isLoggedIn, socket]);
+  }, [isLoggedIn, isVerified, socket]);
 
-  // if (!isLoggedIn) {
-  //   return <Navigate to={"/auth/login"} />;
-  // }
-
+  if (!isLoggedIn) {
+    return <Navigate to={"/auth/login"} />;
+  } else {
+    if (!isVerified) {
+      return <Navigate to={"/verify/account"} />
+    }
+  }
+  
   return (
     <>
       <Stack direction="row">
-        <SideNav/>
+        <SideNav />
 
         <Outlet />
       </Stack>

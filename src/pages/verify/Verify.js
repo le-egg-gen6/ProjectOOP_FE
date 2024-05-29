@@ -22,7 +22,7 @@ export default function LoginPage() {
 
         <Stack direction="row" spacing={0.5}>
           <Typography variant="body2">
-            Sent to email (shreyanshshah242@gmail.com)
+            Sent to email your email from wibulord.forever.love.wibu@gmail.com
           </Typography>
         </Stack>
       </Stack>

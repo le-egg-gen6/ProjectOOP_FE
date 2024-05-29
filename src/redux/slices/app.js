@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "../../utils/axios";
 // import S3 from "../../utils/s3";
-import { v4 } from 'uuid';
-import S3 from "../../utils/s3";
 import { S3_BUCKET_NAME } from "../../config";
 // ----------------------------------------------------------------------
 
@@ -25,7 +23,6 @@ const initialState = {
   friendRequests: [], // all friend requests
   chat_type: null,
   room_id: null,
-  call_logs: [],
 };
 
 const slice = createSlice({
@@ -108,24 +105,25 @@ export function ToggleSidebar() {
   return async (dispatch, getState) => {
     dispatch(slice.actions.toggleSideBar());
   };
-}
+};
+
 export function UpdateSidebarType(type) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.updateSideBarType({ type }));
   };
-}
+};
+
 export function UpdateTab(tab) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.updateTab(tab));
   };
-}
+};
 
 export function FetchUsers() {
   return async (dispatch, getState) => {
     await axios
       .get(
-        "/user/get-users",
-
+        "/user/get-all-verified-user",
         {
           headers: {
             "Content-Type": "application/json",
@@ -135,40 +133,19 @@ export function FetchUsers() {
       )
       .then((response) => {
         console.log(response);
-        dispatch(slice.actions.updateUsers({ users: response.data.data }));
+        dispatch(slice.actions.updateUsers({ users: response.data }));
       })
       .catch((err) => {
         console.log(err);
       });
   };
-}
-export function FetchAllUsers() {
-  return async (dispatch, getState) => {
-    await axios
-      .get(
-        "/user/get-all-verified-users",
+};
 
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getState().auth.token}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        dispatch(slice.actions.updateAllUsers({ users: response.data.data }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-}
 export function FetchFriends() {
   return async (dispatch, getState) => {
     await axios
       .get(
-        "/user/get-friends",
+        "/friend/get-all-friends",
 
         {
           headers: {
@@ -185,7 +162,12 @@ export function FetchFriends() {
         console.log(err);
       });
   };
-}
+};
+
+export function AcceptFriendRequest(request_id) {
+
+};
+
 export function FetchFriendRequests() {
   return async (dispatch, getState) => {
     await axios
@@ -209,7 +191,7 @@ export function FetchFriendRequests() {
         console.log(err);
       });
   };
-}
+};
 
 export const SelectConversation = ({ room_id }) => {
   return async (dispatch, getState) => {
@@ -217,24 +199,6 @@ export const SelectConversation = ({ room_id }) => {
   };
 };
 
-export const FetchCallLogs = () => {
-  return async (dispatch, getState) => {
-    axios
-      .get("/user/get-call-logs", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getState().auth.token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        dispatch(slice.actions.fetchCallLogs({ call_logs: response.data.data }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-};
 export const FetchUserProfile = () => {
   return async (dispatch, getState) => {
     axios
@@ -246,41 +210,42 @@ export const FetchUserProfile = () => {
       })
       .then((response) => {
         console.log(response);
-        dispatch(slice.actions.fetchUser({ user: response.data.data }));
+        dispatch(slice.actions.fetchUser({ user: response.data }));
       })
       .catch((err) => {
         console.log(err);
       });
   };
 };
+
 export const UpdateUserProfile = (formValues) => {
   return async (dispatch, getState) => {
     const file = formValues.avatar;
-
-    const key = v4();
-
-    try {
-      S3.getSignedUrl(
-        "putObject",
-        { Bucket: S3_BUCKET_NAME, Key: key, ContentType: `image/${file.type}` },
-        async (_err, presignedURL) => {
-          await fetch(presignedURL, {
-            method: "PUT",
-
-            body: file,
-
-            headers: {
-              "Content-Type": file.type,
-            },
-          });
-        }
-      );
+    const user = getState().app.user;
+    const key = user.avatar;
+    if (file.name !== user.avatar) {
+      try {
+        // S3.getSignedUrl(
+        //   "putObject",
+        //   { Bucket: S3_BUCKET_NAME, Key: key, ContentType: `image/${file.type}` },
+        //   async (_err, presignedURL) => {
+        //     await fetch(presignedURL, {
+        //       method: "PUT",
+  
+        //       body: file,
+  
+        //       headers: {
+        //         "Content-Type": file.type,
+        //       },
+        //     });
+        //   }
+        // );
+      }
+      catch (error) {
+        console.log(error);
+        dispatch(showSnackbar({severity: "error", message: "An error occured while upload your avatar, please try again."}))
+      }
     }
-    catch (error) {
-      console.log(error);
-    }
-
-
 
     axios
       .patch(

@@ -10,6 +10,7 @@ import { LoadingButton } from "@mui/lab";
 import { useDispatch, useSelector } from "react-redux";
 import { UpdateUserProfile } from "../../../redux/slices/app";
 import { AWS_S3_REGION, S3_BUCKET_NAME } from "../../../config";
+import { Label } from "@mui/icons-material";
 
 const ProfileForm = () => {
   const dispatch = useDispatch();
@@ -17,14 +18,22 @@ const ProfileForm = () => {
   const { user } = useSelector((state) => state.app);
 
   const ProfileSchema = Yup.object().shape({
-    firstName: Yup.string().required("Name is required"),
-    about: Yup.string().required("About is required"),
+    firstName: Yup.string().required("First name is required"),
+    lastName: Yup.string().required("Last name is required"),
+    about: Yup.string().required("About is required").nullable(true),
+    country: Yup.string().required("Country is required").nullable(true),
+    city: Yup.string().required("City is required").nullable(true),
+    address: Yup.string().required("Address is required").nullable(true),
     avatar: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
     firstName: user?.firstName,
+    lastName: user?.lastName,
     about: user?.about,
+    country: user?.country,
+    city: user?.city,
+    address: user?.address,
     avatar: `https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${user?.avatar}`,
   };
 
@@ -50,8 +59,12 @@ const ProfileForm = () => {
       console.log("DATA", data);
       dispatch(
         UpdateUserProfile({
-          firstName: data?.firstName,
-          about: data?.about,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          about: data.about,
+          country: data.country,
+          city: data.city,
+          address: data.address,
           avatar: file,
         })
       );
@@ -82,12 +95,31 @@ const ProfileForm = () => {
       <Stack spacing={4}>
         <RHFUploadAvatar name="avatar" maxSize={3145728} onDrop={handleDrop} />
 
-        <RHFTextField
-          helperText={"This name is visible to your contacts"}
-          name="firstName"
-          label="First Name"
-        />
+        <Stack direction={"row"} spacing={4}>
+          <RHFTextField
+            name="firstName"
+            label="First Name"
+          />
+          <RHFTextField
+            name="lastName"
+            label="Last Name"
+          />
+        </Stack>
         <RHFTextField multiline rows={4} name="about" label="About" />
+
+        <Stack direction={"row"} spacing={4}>
+          <RHFTextField
+            name={"country"}
+            label={"Country"}
+          />
+          <RHFTextField
+            name={"city"}
+            label={"City"}
+          />
+        </Stack>
+
+        <RHFTextField multiline rows={2} name="address" label="Address" />
+
 
         <Stack direction={"row"} justifyContent="end">
           <LoadingButton

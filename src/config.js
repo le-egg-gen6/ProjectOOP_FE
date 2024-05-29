@@ -5,6 +5,10 @@ export const BE_PORT = 6789;
 
 export const BASE_URL = `http://localhost:${BE_PORT}/api/v1`;
 
+export const WS_URL = `http://localhost:${BE_PORT}/ws`
+
+export const API_KEY = '66bcab386c278f7ace4ac92db51c0992';
+
 export const S3_BUCKET_NAME = 'codingmonk';
 export const AWS_ACCESS_KEY = 'AKIARPJQ4HSYLBIK2TDE';
 export const AWS_SECRET_ACCESS_KEY = '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';

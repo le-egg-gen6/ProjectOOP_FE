@@ -10,7 +10,8 @@ import FormProvider, { RHFTextField } from "../../components/hook-form";
 import { Eye, EyeSlash } from "phosphor-react";
 import RHFCodes from "../../components/hook-form/RHFCodes";
 import { useDispatch, useSelector } from "react-redux";
-import { VerifyEmail } from "../../redux/slices/auth";
+import { VerifyEmail, ResendEmailOTP, LogoutUser } from "../../redux/slices/auth";
+import { showSnackbar } from "../../redux/slices/app";
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +52,6 @@ export default function VerifyForm() {
       //   Send API Request
       dispatch(
         VerifyEmail({
-          email,
           otp: `${data.code1}${data.code2}${data.code3}${data.code4}${data.code5}${data.code6}`,
         })
       );
@@ -59,6 +59,20 @@ export default function VerifyForm() {
       console.error(error);
     }
   };
+
+  const resendEmail = async () => {
+    try {
+      dispatch(
+        ResendEmailOTP(
+          {
+            email: email
+          }
+        )
+      )
+    } catch (error) {
+      dispatch(showSnackbar({ severity: "error", message: error.message }));
+    }
+  }
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -68,25 +82,44 @@ export default function VerifyForm() {
           inputs={["code1", "code2", "code3", "code4", "code5", "code6"]}
         />
 
-        <Button
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          sx={{
-            mt: 3,
-            bgcolor: "text.primary",
-            color: (theme) =>
-              theme.palette.mode === "light" ? "common.white" : "grey.800",
-            "&:hover": {
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={"center"}>
+          <Button
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+            sx={{
               bgcolor: "text.primary",
               color: (theme) =>
                 theme.palette.mode === "light" ? "common.white" : "grey.800",
-            },
-          }}
-        >
-          Verify
-        </Button>
+              "&:hover": {
+                bgcolor: "text.primary",
+                color: (theme) =>
+                  theme.palette.mode === "light" ? "common.white" : "grey.800",
+              },
+            }}
+          >
+            Verify
+          </Button>
+          <Button
+            fullWidth
+            onClick={resendEmail}
+            size="large"
+            variant="contained"
+            sx={{
+              bgcolor: "text.primary",
+              color: (theme) =>
+                theme.palette.mode === "light" ? "common.white" : "grey.800",
+              "&:hover": {
+                bgcolor: "text.primary",
+                color: (theme) =>
+                  theme.palette.mode === "light" ? "common.white" : "grey.800",
+              },
+            }}
+          >
+            Resend Email
+          </Button>
+        </Stack>
       </Stack>
     </FormProvider>
   );

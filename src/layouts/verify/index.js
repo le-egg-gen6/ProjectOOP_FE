@@ -5,11 +5,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import Logo from "../../assets/images/logo.ico";
 import { useSelector } from "react-redux";
 
-const AuthLayout = () => {
-  const { isLoggedIn } = useSelector((state) => state.auth);
+const VerifyLayout = () => {
+  const { isVerified } = useSelector((state) => state.auth);
 
-  if (isLoggedIn) {
-    return <Navigate to={"/verify/account"} />;
+  if (isVerified) {
+    return <Navigate to={"/app"} />;
   }
 
   return (
@@ -30,4 +30,4 @@ const AuthLayout = () => {
   );
 };
 
-export default AuthLayout;
+export default VerifyLayout;

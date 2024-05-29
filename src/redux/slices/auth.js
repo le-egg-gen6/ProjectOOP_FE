@@ -9,11 +9,11 @@ const initialState = {
   isLoggedIn: false,
   token: "",
   isLoading: false,
+  isVerified: false,
   error: false,
   user: null,
-  user_id: null,
+  userId: null,
   email: "",
-  isVerified: false,
 };
 
 const slice = createSlice({
@@ -27,16 +27,21 @@ const slice = createSlice({
     logIn(state, action) {
       state.isLoggedIn = action.payload.isLoggedIn;
       state.token = action.payload.token;
-      state.user_id = action.payload.user_id;
+      state.userId = action.payload.userId;
+      state.isVerified = action.payload.isVerified;
     },
     signOut(state, action) {
       state.isLoggedIn = false;
+      state.isVerified = false;
       state.token = "";
-      state.user_id = null;
+      state.userId = null;
     },
-    updateRegisterEmail(state, action) {
+    updateEmail(state, action) {
       state.email = action.payload.email;
     },
+    updateStatus(state, action) {
+      state.isVerified = true
+    }
   },
 });
 
@@ -49,8 +54,9 @@ export function NewPassword(formValues) {
 
     await axios
       .post(
-        "/auth/reset-password",
+        "/password-reset/verify",
         {
+          email: getState().auth.email,
           ...formValues,
         },
         {
@@ -61,22 +67,27 @@ export function NewPassword(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        dispatch(
-          slice.actions.logIn({
-            isLoggedIn: true,
-            token: response.data.token,
-          })
-        );
-        dispatch(
-          showSnackbar({ severity: "success", message: response.data.message })
-        );
+        const success = response.data.isError === 0;
+        if (success) {
+          dispatch(
+            showSnackbar({ severity: "success", message: response.data.message })
+          );
+          dispatch(
+            slice.actions.updateEmail({ email: "" })
+          );
+          window.location.href = "/auth/login";
+        } else {
+          dispatch(
+            showSnackbar({ severity: "error", message: response.data.message })
+          );
+        }
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: false })
         );
       })
       .catch(function (error) {
         console.log(error);
-        dispatch(showSnackbar({ severity: "error", message: error.message }));
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: true })
         );
@@ -87,10 +98,12 @@ export function NewPassword(formValues) {
 export function ForgotPassword(formValues) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.updateIsLoading({ isLoading: true, error: false }));
-
+    dispatch(
+      slice.actions.updateEmail({ email: formValues.email })
+    )
     await axios
       .post(
-        "/auth/forgot-password",
+        "/password-reset/send-otp",
         {
           ...formValues,
         },
@@ -102,17 +115,24 @@ export function ForgotPassword(formValues) {
       )
       .then(function (response) {
         console.log(response);
-
-        dispatch(
-          showSnackbar({ severity: "success", message: response.data.message })
-        );
+        const success = response.data.isError === 0;
+        if (success) {
+          dispatch(
+            showSnackbar({ severity: "success", message: response.data.message })
+          );
+          window.location.href = "/auth/new-password";
+        } else {
+          dispatch(
+            showSnackbar({ severity: "error", message: response.data.message })
+          );
+        }
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: false })
         );
       })
       .catch(function (error) {
         console.log(error);
-        dispatch(showSnackbar({ severity: "error", message: error.message }));
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: true })
         );
@@ -140,24 +160,34 @@ export function LoginUser(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        dispatch(
-          slice.actions.logIn({
-            isLoggedIn: true,
-            token: response.data.token,
-            user_id: response.data.user_id,
-          })
-        );
-        window.localStorage.setItem("user_id", response.data.user_id);
-        dispatch(
-          showSnackbar({ severity: "success", message: response.data.message })
-        );
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: false })
-        );
+        const success = response.data.isError === 0;
+        if (success) {
+          dispatch(
+            showSnackbar({ severity: "success", message: response.data.message })
+          );
+          dispatch(
+            slice.actions.updateIsLoading({ isLoading: false, error: false })
+          );
+          dispatch(
+            slice.actions.logIn({
+              isLoggedIn: true,
+              token: response.data.token,
+              userId: response.data.userId,
+              isVerified: response.data.isVerified === 0 ? true : false,
+            })
+          );
+        } else {
+          dispatch(
+            showSnackbar({ severity: "error", message: response.data.errorMessage })
+          );
+          dispatch(
+            slice.actions.updateIsLoading({ isLoading: false, error: false })
+          );
+        }
       })
       .catch(function (error) {
         console.log(error);
-        dispatch(showSnackbar({ severity: "error", message: error.message }));
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: true })
         );
@@ -167,8 +197,38 @@ export function LoginUser(formValues) {
 
 export function LogoutUser() {
   return async (dispatch, getState) => {
-    window.localStorage.removeItem("user_id");
-    dispatch(slice.actions.signOut());
+    await axios
+      .get(
+        "/auth/logout",
+        {
+          headers: {
+            Authorization: `Bearer ${getState().auth.token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      ).then(
+        function (response) {
+          console.log(response);
+          var success = response.data.isError === 0;
+          if (success) {
+            dispatch(
+              showSnackbar({ severity: "success", message: response.data.message })
+            );
+            window.localStorage.removeItem("userId");
+            dispatch(slice.actions.signOut());
+          } else {
+            dispatch(
+              showSnackbar({ severity: "error", message: response.data.message })
+            );
+          }
+        }
+      ).catch(function (error) {
+        console.log(error);
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
+        dispatch(
+          slice.actions.updateIsLoading({ error: true, isLoading: false })
+        );
+      });
   };
 }
 
@@ -193,11 +253,7 @@ export function RegisterUser(formValues) {
         const success = response.data.isError === 0;
         if (success) {
           dispatch(
-            slice.actions.updateRegisterEmail({ email: formValues.email })
-          );
-
-          dispatch(
-            showSnackbar({ severity: "success", message: "Registered Successfully!" })
+            showSnackbar({ severity: "success", message: response.data.message })
           );
 
           dispatch(
@@ -208,22 +264,26 @@ export function RegisterUser(formValues) {
             slice.actions.logIn({
               isLoggedIn: true,
               token: response.data.token,
-              user_id: response.data.user_id,
+              userId: response.data.userId,
+              isVerified: response.data.isVerified === 0 ? true : false,
             })
           )
+
         } else {
           dispatch(
             showSnackbar({ severity: "error", message: response.data.errorMessage })
           );
           dispatch(
-            slice.actions.updateIsLoading({ error: true, isLoading: false })
+            slice.actions.updateIsLoading({ isLoading: false, error: true })
           );
         }
       })
-      .finally(() => {
-        if (!getState().auth.error) {
-          window.location.href = "/auth/verify";
-        }
+      .catch(function (error) {
+        console.log(error);
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
+        dispatch(
+          slice.actions.updateIsLoading({ isLoading: false, error: true })
+        );
       });
   };
 }
@@ -234,41 +294,86 @@ export function VerifyEmail(formValues) {
 
     await axios
       .post(
-        "/auth/verify",
+        "/email-verification/verify",
         {
+          userId: getState().auth.userId,
           ...formValues,
         },
         {
           headers: {
+            Authorization: `Bearer ${getState().auth.token}`,
             "Content-Type": "application/json",
           },
         }
       )
       .then(function (response) {
         console.log(response);
-        dispatch(slice.actions.updateRegisterEmail({ email: "" }));
-        window.localStorage.setItem("user_id", response.data.user_id);
-        dispatch(
-          slice.actions.logIn({
-            isLoggedIn: true,
-            token: response.data.token,
-          })
-        );
-
-
-        dispatch(
-          showSnackbar({ severity: "success", message: response.data.message })
-        );
+        var success = response.data.isError === 0;
+        if (success) {
+          dispatch(
+            showSnackbar({ severity: "success", message: response.data.message })
+          );
+          dispatch(
+            slice.actions.updateStatus()
+          );
+        } else {
+          dispatch(
+            showSnackbar({ severity: "error", message: response.data.message })
+          );
+        }
         dispatch(
           slice.actions.updateIsLoading({ isLoading: false, error: false })
         );
       })
       .catch(function (error) {
         console.log(error);
-        dispatch(showSnackbar({ severity: "error", message: error.message }));
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
         dispatch(
           slice.actions.updateIsLoading({ error: true, isLoading: false })
         );
       });
   };
+}
+
+export function ResendEmailOTP(formValues) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.updateIsLoading({ isLoading: true, error: false }));
+
+    await axios
+      .post(
+        "/email-verification/resend",
+        {
+
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getState().auth.token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then(function (response) {
+        console.log(response);
+        var success = response.data.isError === 0;
+        if (success) {
+          dispatch(
+            showSnackbar({ severity: "success", message: response.data.message })
+          );
+        } else {
+          dispatch(
+            showSnackbar({ severity: "error", message: response.data.message })
+          );
+        }
+        dispatch(
+          slice.actions.updateIsLoading({ isLoading: false, error: false })
+        );
+      })
+      .catch(function (error) {
+        console.log(error);
+        dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
+        dispatch(
+          slice.actions.updateIsLoading({ error: true, isLoading: false })
+        );
+      });
+  }
 }
