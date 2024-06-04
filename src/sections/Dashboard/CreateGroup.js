@@ -1,6 +1,7 @@
 import React from "react";
 import * as Yup from "yup";
 import {
+  Box,
   Button,
   Dialog,
   DialogContent,
@@ -14,28 +15,17 @@ import { useForm } from "react-hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { RHFTextField } from "../../components/hook-form";
 import RHFAutocomplete from "../../components/hook-form/RHFAutocomplete";
+import { useSelector } from "react-redux";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const TAGS_OPTION = [
-  "Toy Story 3",
-  "Logan",
-  "Full Metal Jacket",
-  "Dangal",
-  "The Sting",
-  "2001: A Space Odyssey",
-  "Singin' in the Rain",
-  "Toy Story",
-  "Bicycle Thieves",
-  "The Kid",
-  "Inglourious Basterds",
-  "Snatch",
-  "3 Idiots",
-];
 
 const CreateGroupForm = ({ handleClose }) => {
+  
+  const { friends } = useSelector((state) => state.app.friends);
+
   const NewGroupSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
 
@@ -72,28 +62,30 @@ const CreateGroupForm = ({ handleClose }) => {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
-        <RHFTextField name="title" label="Title" />
-        <RHFAutocomplete
-          name="members"
-          label="Members"
-          multiple
-          freeSolo
-          options={TAGS_OPTION.map((option) => option)}
-          ChipProps={{ size: "medium" }}
-        />
-        <Stack
-          spacing={2}
-          direction={"row"}
-          alignItems="center"
-          justifyContent={"end"}
-        >
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" variant="contained">
-            Create
-          </Button>
+      <Box sx={{ p: 1 }}>
+        <Stack spacing={3}>
+          <RHFTextField name="title" label="Title" />
+          <RHFAutocomplete
+            name="members"
+            label="Members"
+            multiple
+            freeSolo
+            options={friends.map((friend) => friend.fullName)}
+            ChipProps={{ size: "medium" }}
+          />
+          <Stack
+            spacing={2}
+            direction={"row"}
+            alignItems="center"
+            justifyContent={"end"}
+          >
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Create
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </Box>
     </FormProvider>
   );
 };

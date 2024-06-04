@@ -5,9 +5,8 @@ import { SimpleBarStyle } from "../../components/Scrollbar";
 
 import { ChatHeader, ChatFooter } from "../../components/Chat";
 import useResponsive from "../../hooks/useResponsive";
-import { Chat_History } from "../../data";
+import { Chat_History, Shared_docs, Shared_links } from "../../data";
 import {
-  DocMsg,
   LinkMsg,
   MediaMsg,
   ReplyMsg,
@@ -21,16 +20,16 @@ import {
 } from "../../redux/slices/conversation";
 import { socket } from "../../socket";
 
-const Conversation = ({ isMobile, menu }) => {
+const Conversation = ({ menu }) => {
   const dispatch = useDispatch();
 
   const { conversations, current_messages } = useSelector(
     (state) => state.conversation.direct_chat
   );
-  const { room_id } = useSelector((state) => state.app);
+  const { conversationId } = useSelector((state) => state.app);
 
   useEffect(() => {
-    const current = conversations.find((el) => el?.id === room_id);
+    const current = conversations.find((el) => el?.id === conversationId);
 
     socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
       // data => list of messages
@@ -41,9 +40,9 @@ const Conversation = ({ isMobile, menu }) => {
     dispatch(SetCurrentConversation(current));
   }, []);
   return (
-    <Box p={isMobile ? 1 : 3}>
+    <Box p={3}>
       <Stack spacing={3}>
-        {current_messages.map((el, idx) => {
+        {Chat_History.map((el, idx) => {
           switch (el.type) {
             case "divider":
               return (
@@ -59,11 +58,45 @@ const Conversation = ({ isMobile, menu }) => {
                     <MediaMsg el={el} menu={menu} />
                   );
 
-                case "doc":
+                case "Link":
                   return (
-                    // Doc Message
-                    <DocMsg el={el} menu={menu} />
+                    //  Link Message
+                    <LinkMsg el={el} menu={menu} />
                   );
+
+                case "reply":
+                  return (
+                    //  ReplyMessage
+                    <ReplyMsg el={el} menu={menu} />
+                  );
+
+                default:
+                  return (
+                    // Text Message
+                    <TextMsg el={el} menu={menu} />
+                  );
+              }
+
+            default:
+              return <></>;
+          }
+        })}
+        {Shared_docs.map((el, idx) => {
+          switch (el.type) {
+            case "divider":
+              return (
+                // Timeline
+                <Timeline el={el} />
+              );
+
+            case "msg":
+              switch (el.subtype) {
+                case "img":
+                  return (
+                    // Media Message
+                    <MediaMsg el={el} menu={menu} />
+                  );
+
                 case "Link":
                   return (
                     //  Link Message
@@ -93,7 +126,6 @@ const Conversation = ({ isMobile, menu }) => {
 };
 
 const ChatComponent = () => {
-  const isMobile = useResponsive("between", "md", "xs", "sm");
   const theme = useTheme();
 
   const messageListRef = useRef(null);
@@ -111,7 +143,7 @@ const ChatComponent = () => {
     <Stack
       height={"100%"}
       maxHeight={"100vh"}
-      width={isMobile ? "100vw" : "auto"}
+      width={"auto"}
     >
       {/*  */}
       <ChatHeader />
@@ -132,7 +164,7 @@ const ChatComponent = () => {
         }}
       >
         <SimpleBarStyle timeout={500} clickOnTrack={false}>
-          <Conversation menu={true} isMobile={isMobile} />
+          <Conversation menu={true} />
         </SimpleBarStyle>
       </Box>
 

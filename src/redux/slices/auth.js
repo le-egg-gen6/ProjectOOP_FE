@@ -214,7 +214,6 @@ export function LogoutUser() {
             dispatch(
               showSnackbar({ severity: "success", message: response.data.message })
             );
-            window.localStorage.removeItem("userId");
             dispatch(slice.actions.signOut());
           } else {
             dispatch(

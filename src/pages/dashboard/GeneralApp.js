@@ -6,17 +6,15 @@ import { Link, useSearchParams } from "react-router-dom";
 import ChatComponent from "./Conversation";
 import Chats from "./Chats";
 import Contact from "../../sections/dashboard/Contact";
-import NoChat from "../../assets/illustration/NoChat";
+// import NoChat from "../../assets/illustration/NoChat";
 import { useSelector } from "react-redux";
-import StarredMessages from "../../sections/dashboard/StarredMessages";
-import Media from "../../sections/dashboard/SharedMessages";
 
 const GeneralApp = () => {
   const [searchParams] = useSearchParams();
 
   const theme = useTheme();
 
-  const { sideBar, room_id, chat_type } = useSelector((state) => state.app);
+  const { sideBar, conversationId, chat_type } = useSelector((state) => state.app);
 
   return (
     <>
@@ -34,13 +32,12 @@ const GeneralApp = () => {
                 : theme.palette.background.paper,
             borderBottom:
               searchParams.get("type") === "individual-chat" &&
-              searchParams.get("id")
+                searchParams.get("id")
                 ? "0px"
                 : "6px solid #0162C4",
           }}
         >
-          {chat_type === "individual" &&
-          room_id !== null ? (
+          {chat_type === "individual" && conversationId !== null ? (
             <ChatComponent />
           ) : (
             <Stack
@@ -49,7 +46,7 @@ const GeneralApp = () => {
               alignItems="center"
               justifyContent={"center"}
             >
-              <NoChat />
+              {/* <NoChat /> */}
               <Typography variant="subtitle2">
                 Select a conversation or start a{" "}
                 <Link
@@ -65,22 +62,6 @@ const GeneralApp = () => {
             </Stack>
           )}
         </Box>
-        {sideBar.open &&
-          (() => {
-            switch (sideBar.type) {
-              case "CONTACT":
-                return <Contact />;
-
-              case "STARRED":
-                return <StarredMessages />;
-
-              case "SHARED":
-                return <Media />;
-
-              default:
-                break;
-            }
-          })()}
       </Stack>
     </>
   );

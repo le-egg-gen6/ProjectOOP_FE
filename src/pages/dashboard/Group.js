@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { MagnifyingGlass, Plus } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
+import { useDispatch, useSelector } from "react-redux";
 import { SimpleBarStyle } from "../../components/Scrollbar";
-import { ChatList } from "../../data";
 import ChatElement from "../../components/ChatElement";
 import {
   Search,
@@ -18,8 +18,16 @@ import {
   StyledInputBase,
 } from "../../components/Search";
 import CreateGroup from "../../sections/dashboard/CreateGroup";
+import { ChatList } from "../../data";
 
 const Group = () => {
+
+  const dispatch = useDispatch();
+
+  // const { conversations } = useSelector((state) => state.conversation.group_chat);
+
+  const conversations = [];
+
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleCloseDialog = () => {

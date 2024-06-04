@@ -26,18 +26,18 @@ const Profile_Menu = [
 const Nav_Buttons = [
   {
     index: 0,
-    icon: <ChatCircleDots />,
+    icon: <ChatCircleDots size={30}/>,
   },
   {
     index: 1,
-    icon: <Users />,
+    icon: <Users size={30}/>,
   },
 ];
 
 const Nav_Setting = [
   {
     index: 3,
-    icon: <GearSix />,
+    icon: <GearSix size={30}/>,
   },
 ];
 
@@ -198,18 +198,6 @@ const Chat_History = [
 const Message_options = [
   {
     title: "Reply",
-  },
-  {
-    title: "React to message",
-  },
-  {
-    title: "Forward message",
-  },
-  {
-    title: "Star message",
-  },
-  {
-    title: "Report",
   },
   {
     title: "Delete Message",

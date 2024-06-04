@@ -165,9 +165,7 @@ const Footer = () => {
 
   const user_id = window.localStorage.getItem("user_id");
 
-  const isMobile = useResponsive("between", "md", "xs", "sm");
-
-  const { sideBar, room_id } = useSelector((state) => state.app);
+  const { sideBar, conversationId } = useSelector((state) => state.app);
 
   const [openPicker, setOpenPicker] = React.useState(false);
 
@@ -183,8 +181,8 @@ const Footer = () => {
 
       setValue(
         value.substring(0, selectionStart) +
-          emoji +
-          value.substring(selectionEnd)
+        emoji +
+        value.substring(selectionEnd)
       );
 
       // Move the cursor to the end of the inserted emoji
@@ -200,7 +198,7 @@ const Footer = () => {
       }}
     >
       <Box
-        p={isMobile ? 1 : 2}
+        p={2}
         width={"100%"}
         sx={{
           backgroundColor:
@@ -210,7 +208,7 @@ const Footer = () => {
           boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
         }}
       >
-        <Stack direction="row" alignItems={"center"} spacing={isMobile ? 1 : 3}>
+        <Stack direction="row" alignItems={"center"} spacing={3}>
           <Stack sx={{ width: "100%" }}>
             <Box
               style={{
@@ -218,7 +216,7 @@ const Footer = () => {
                 position: "fixed",
                 display: openPicker ? "inline" : "none",
                 bottom: 81,
-                right: isMobile ? 20 : sideBar.open ? 420 : 100,
+                right: sideBar.open ? 420 : 100,
               }}
             >
               <Picker
@@ -255,7 +253,7 @@ const Footer = () => {
                 onClick={() => {
                   socket.emit("text_message", {
                     message: linkify(value),
-                    conversation_id: room_id,
+                    conversation_id: conversationId,
                     from: user_id,
                     to: current_conversation.user_id,
                     type: containsUrl(value) ? "Link" : "Text",

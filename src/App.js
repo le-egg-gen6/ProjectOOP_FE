@@ -9,7 +9,6 @@ import ThemeSettings from "./components/settings";
 import ThemeProvider from "./theme";
 import Router from "./routes";
 import { closeSnackBar } from "./redux/slices/app";
-import { socket } from "./socket";
 
 const vertical = "bottom";
 const horizontal = "center";

@@ -23,8 +23,8 @@ const UsersList = () => {
 
   return (
     <>
-      {users.map((el, idx) => {
-        return <UserElement key={idx} {...el} />;
+      {users.map((el) => {
+        return <UserElement key={el.id} {...el} />;
       })}
     </>
   );

@@ -16,6 +16,8 @@ import truncateString from "../../utils/truncate";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
 import Embed from "react-embed";
 
+const userId = window.localStorage.getItem("userId");
+
 const MessageOption = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -56,13 +58,14 @@ const MessageOption = () => {
 
 const TextMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const incoming = el.senderId !== userId;
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
       <Box
         px={1.5}
         py={1.5}
         sx={{
-          backgroundColor: el.incoming
+          backgroundColor: incoming
             ? alpha(theme.palette.background.default, 1)
             : theme.palette.primary.main,
           borderRadius: 1.5,
@@ -71,7 +74,7 @@ const TextMsg = ({ el, menu }) => {
       >
         <Typography
           variant="body2"
-          color={el.incoming ? theme.palette.text : "#fff"}
+          color={incoming ? theme.palette.text : "#fff"}
         >
           {el.message}
         </Typography>
@@ -82,13 +85,14 @@ const TextMsg = ({ el, menu }) => {
 };
 const MediaMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const incoming = el.senderId !== userId;
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
       <Box
         px={1.5}
         py={1.5}
         sx={{
-          backgroundColor: el.incoming
+          backgroundColor: incoming
             ? alpha(theme.palette.background.default, 1)
             : theme.palette.primary.main,
           borderRadius: 1.5,
@@ -113,59 +117,17 @@ const MediaMsg = ({ el, menu }) => {
     </Stack>
   );
 };
-const DocMsg = ({ el, menu }) => {
-  const theme = useTheme();
-  return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
-      <Box
-        px={1.5}
-        py={1.5}
-        sx={{
-          backgroundColor: el.incoming
-            ? alpha(theme.palette.background.default, 1)
-            : theme.palette.primary.main,
-          borderRadius: 1.5,
-          width: "max-content",
-        }}
-      >
-        <Stack spacing={2}>
-          <Stack
-            p={2}
-            direction="row"
-            spacing={3}
-            alignItems="center"
-            sx={{
-              backgroundColor: theme.palette.background.paper,
-              borderRadius: 1,
-            }}
-          >
-            <Image size={48} />
-            <Typography variant="caption">Abstract.png</Typography>
-            <IconButton>
-              <DownloadSimple />
-            </IconButton>
-          </Stack>
-          <Typography
-            variant="body2"
-            color={el.incoming ? theme.palette.text : "#fff"}
-          >
-            {el.message}
-          </Typography>
-        </Stack>
-      </Box>
-      {menu && <MessageOption />}
-    </Stack>
-  );
-};
+
 const LinkMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const incoming = el.senderId !== userId;
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
       <Box
         px={1.5}
         py={1.5}
         sx={{
-          backgroundColor: el.incoming
+          backgroundColor: incoming
             ? alpha(theme.palette.background.default, 1)
             : theme.palette.primary.main,
           borderRadius: 1.5,
@@ -193,7 +155,7 @@ const LinkMsg = ({ el, menu }) => {
           </Stack>
           <Typography
             variant="body2"
-            color={el.incoming ? theme.palette.text : "#fff"}
+            color={incoming ? theme.palette.text : "#fff"}
           >
             <div dangerouslySetInnerHTML={{ __html: el.message }}></div>
           </Typography>
@@ -205,13 +167,14 @@ const LinkMsg = ({ el, menu }) => {
 };
 const ReplyMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const incoming = el.senderId !== userId;
   return (
-    <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
+    <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
       <Box
         px={1.5}
         py={1.5}
         sx={{
-          backgroundColor: el.incoming
+          backgroundColor: incoming
             ? alpha(theme.palette.background.paper, 1)
             : theme.palette.primary.main,
           borderRadius: 1.5,
@@ -236,7 +199,7 @@ const ReplyMsg = ({ el, menu }) => {
           </Stack>
           <Typography
             variant="body2"
-            color={el.incoming ? theme.palette.text : "#fff"}
+            color={incoming ? theme.palette.text : "#fff"}
           >
             {el.reply}
           </Typography>
@@ -259,4 +222,4 @@ const Timeline = ({ el }) => {
   );
 };
 
-export { Timeline, MediaMsg, LinkMsg, DocMsg, TextMsg, ReplyMsg };
+export { Timeline, MediaMsg, LinkMsg, TextMsg, ReplyMsg };

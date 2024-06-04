@@ -1,14 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "../../utils/axios";
-// import S3 from "../../utils/s3";
-import { S3_BUCKET_NAME } from "../../config";
+import axiosImage from "../../utils/axiosImageDb";
+import { IMAGE_DB_API_KEY } from "../../config";
 // ----------------------------------------------------------------------
 
 const initialState = {
   user: {},
   sideBar: {
     open: false,
-    type: "CONTACT", // can be CONTACT, STARRED, SHARED
   },
   isLoggedIn: false,
   tab: 0, // [0, 1, 2, 3]
@@ -18,11 +17,9 @@ const initialState = {
     message: null,
   },
   users: [], // all users of app who are not friends and not requested yet
-  all_users: [],
   friends: [], // all friends
   friendRequests: [], // all friend requests
-  chat_type: null,
-  room_id: null,
+  conversationId: null,
 };
 
 const slice = createSlice({
@@ -64,7 +61,7 @@ const slice = createSlice({
       state.users = action.payload.users;
     },
     updateAllUsers(state, action) {
-      state.all_users = action.payload.users;
+      state.allUsers = action.payload.allUsers;
     },
     updateFriends(state, action) {
       state.friends = action.payload.friends;
@@ -73,8 +70,7 @@ const slice = createSlice({
       state.friendRequests = action.payload.requests;
     },
     selectConversation(state, action) {
-      state.chat_type = "individual";
-      state.room_id = action.payload.room_id;
+      state.conversationId = action.payload.conversationId;
     },
   },
 });
@@ -141,6 +137,7 @@ export function FetchUsers() {
   };
 };
 
+
 export function FetchFriends() {
   return async (dispatch, getState) => {
     await axios
@@ -164,6 +161,18 @@ export function FetchFriends() {
   };
 };
 
+export function SendFriendRequest(friend_id) {
+  return async (dispatch, getState) => {
+    await axios.post(
+      
+    ).then(
+  
+    ).catch(
+  
+    )
+  }
+}
+
 export function AcceptFriendRequest(request_id) {
 
 };
@@ -172,7 +181,7 @@ export function FetchFriendRequests() {
   return async (dispatch, getState) => {
     await axios
       .get(
-        "/user/get-requests",
+        "/friend-request/get-all-friend-request",
 
         {
           headers: {
@@ -193,9 +202,9 @@ export function FetchFriendRequests() {
   };
 };
 
-export const SelectConversation = ({ room_id }) => {
+export const SelectConversation = ({ conversationId }) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.selectConversation({ room_id }));
+    dispatch(slice.actions.selectConversation({ conversationId }));
   };
 };
 
@@ -221,49 +230,40 @@ export const FetchUserProfile = () => {
 export const UpdateUserProfile = (formValues) => {
   return async (dispatch, getState) => {
     const file = formValues.avatar;
-    const user = getState().app.user;
-    const key = user.avatar;
-    if (file.name !== user.avatar) {
-      try {
-        // S3.getSignedUrl(
-        //   "putObject",
-        //   { Bucket: S3_BUCKET_NAME, Key: key, ContentType: `image/${file.type}` },
-        //   async (_err, presignedURL) => {
-        //     await fetch(presignedURL, {
-        //       method: "PUT",
-  
-        //       body: file,
-  
-        //       headers: {
-        //         "Content-Type": file.type,
-        //       },
-        //     });
-        //   }
-        // );
+    axiosImage.post(
+      "",
+      {
+        params: {
+          key : IMAGE_DB_API_KEY,
+          image : file
+        } 
       }
-      catch (error) {
-        console.log(error);
-        dispatch(showSnackbar({severity: "error", message: "An error occured while upload your avatar, please try again."}))
-      }
-    }
-
-    axios
-      .patch(
-        "/user/update-me",
-        { ...formValues, avatar: key },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getState().auth.token}`,
+    ).then(
+      (response) => {
+        axios.post(
+          "/user/update-me",
+          { 
+            ...formValues, 
+            avatarUrl: response.data.data.url, 
+            avatarName: response.data.data.title,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        dispatch(slice.actions.updateUser({ user: response.data.data }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${getState().auth.token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          dispatch(slice.actions.updateUser({ user: response.data }));
+        })
+        .catch((err) => {
+          dispatch(showSnackbar({severity: "error", message: "An error occured while update your details, please try again."}))
+        })
+      }
+    ).catch(
+      dispatch(showSnackbar({severity: "error", message: "An error occured while upload your avatar, please try again."})) 
+    )
   };
 };
