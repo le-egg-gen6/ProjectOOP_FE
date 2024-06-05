@@ -5,6 +5,7 @@ import useResponsive from "../../hooks/useResponsive";
 import SideNav from "./SideNav";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchUserProfile, SelectConversation, showSnackbar } from "../../redux/slices/app";
+import { FetchConversations } from "../../redux/slices/conversation";
 import { socket, connectSocket } from "../../socket";
 import {
   UpdateConversation,
@@ -22,6 +23,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     dispatch(FetchUserProfile());
+    dispatch(FetchConversations());
   }, []);
 
 

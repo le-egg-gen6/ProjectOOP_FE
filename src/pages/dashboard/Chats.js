@@ -37,10 +37,6 @@ const Chats = () => {
 
   const { conversations } = useSelector((state) => state.conversation);
 
-  useEffect(() => {
-    dispatch(FetchConversations());
-  }, []);
-
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleCloseDialog = () => {
@@ -105,14 +101,14 @@ const Chats = () => {
                 <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                   Pinned
                 </Typography>
-                {ChatList.filter((el) => el.pinned).map((el, idx) => {
-                  return <ChatElement {...el} />;
+                {conversations.filter((el) => el.pinned).map((el, idx) => {
+                  return <ChatElement key={idx} {...el} />;
                 })}
                 <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                   All Chats
                 </Typography>
-                {ChatList.filter((el) => !el.pinned).map((el, idx) => {
-                  return <ChatElement {...el} />;
+                {conversations.filter((el) => !el.pinned).map((el, idx) => {
+                  return <ChatElement key={idx} {...el} />;
                 })}
               </Stack>
             </SimpleBarStyle>

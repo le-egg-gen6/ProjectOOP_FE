@@ -72,6 +72,23 @@ const slice = createSlice({
     selectConversation(state, action) {
       state.conversationId = action.payload.conversationId;
     },
+    signOut(state, action) {
+      state.user = {};
+      state.sideBar = {
+        open: false,
+      };
+      state.isLoggedIn = false;
+      state.tab = 0; // [0, 1, 2, 3]
+      state.snackbar = {
+        open: null,
+        severity: null,
+        message: null,
+      };
+      state.users = []; // all users of app who are not friends and not requested yet
+      state.friends = []; // all friends
+      state.friendRequests = []; // all friend requests
+      state.conversationId = null;
+    }
   },
 });
 
@@ -115,6 +132,12 @@ export function UpdateTab(tab) {
   };
 };
 
+export function LogoutForAppRedux() {
+  return async(dispatch, getState) => {
+    dispatch(slice.actions.signOut());
+  }
+}
+
 export function FetchUsers() {
   return async (dispatch, getState) => {
     await axios
@@ -129,7 +152,12 @@ export function FetchUsers() {
       )
       .then((response) => {
         console.log(response);
-        dispatch(slice.actions.updateUsers({ users: response.data }));
+        const success = response.data.success;
+        if (success) {
+          dispatch(slice.actions.updateUsers({ users: response.data.data }));
+        } else {
+          dispatch(showSnackbar({ severity: "error", message: response.data.message }));
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -153,7 +181,12 @@ export function FetchFriends() {
       )
       .then((response) => {
         console.log(response);
-        dispatch(slice.actions.updateFriends({ friends: response.data.data }));
+        const success = response.data.success;
+        if (success) {
+          dispatch(slice.actions.updateFriends({ friends: response.data.data }));
+        } else {
+          dispatch(showSnackbar({ severity: "error", message: response.data.message }));
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -164,11 +197,11 @@ export function FetchFriends() {
 export function SendFriendRequest(friend_id) {
   return async (dispatch, getState) => {
     await axios.post(
-      
+
     ).then(
-  
+
     ).catch(
-  
+
     )
   }
 }
@@ -192,9 +225,14 @@ export function FetchFriendRequests() {
       )
       .then((response) => {
         console.log(response);
-        dispatch(
-          slice.actions.updateFriendRequests({ requests: response.data.data })
-        );
+        const sucesss = response.data.success;
+        if (sucesss) {
+          dispatch(
+            slice.actions.updateFriendRequests({ requests: response.data.data })
+          );
+        } else {
+          dispatch(showSnackbar({ severity: "error", message: response.data.message }));
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -219,7 +257,12 @@ export const FetchUserProfile = () => {
       })
       .then((response) => {
         console.log(response);
-        dispatch(slice.actions.fetchUser({ user: response.data }));
+        const success = response.data.success;
+        if (success) {
+          dispatch(slice.actions.fetchUser({ user: response.data.data }));
+        } else {
+          dispatch(showSnackbar({ severity: "error", message: response.data.message }));
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -234,17 +277,17 @@ export const UpdateUserProfile = (formValues) => {
       "",
       {
         params: {
-          key : IMAGE_DB_API_KEY,
-          image : file
-        } 
+          key: IMAGE_DB_API_KEY,
+          image: file
+        }
       }
     ).then(
       (response) => {
         axios.post(
           "/user/update-me",
-          { 
-            ...formValues, 
-            avatarUrl: response.data.data.url, 
+          {
+            ...formValues,
+            avatarUrl: response.data.data.url,
             avatarName: response.data.data.title,
           },
           {
@@ -254,16 +297,16 @@ export const UpdateUserProfile = (formValues) => {
             },
           }
         )
-        .then((response) => {
-          console.log(response);
-          dispatch(slice.actions.updateUser({ user: response.data }));
-        })
-        .catch((err) => {
-          dispatch(showSnackbar({severity: "error", message: "An error occured while update your details, please try again."}))
-        })
+          .then((response) => {
+            console.log(response);
+            dispatch(slice.actions.updateUser({ user: response.data }));
+          })
+          .catch((err) => {
+            dispatch(showSnackbar({ severity: "error", message: "An error occured while update your details, please try again." }))
+          })
       }
     ).catch(
-      dispatch(showSnackbar({severity: "error", message: "An error occured while upload your avatar, please try again."})) 
+      dispatch(showSnackbar({ severity: "error", message: "An error occured while upload your avatar, please try again." }))
     )
   };
 };

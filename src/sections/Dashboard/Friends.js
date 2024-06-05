@@ -23,8 +23,8 @@ const UsersList = () => {
 
   return (
     <>
-      {users.map((el) => {
-        return <UserElement key={el.id} {...el} />;
+      {users.map((el, idx) => {
+        return <UserElement key={idx} {...el} />;
       })}
     </>
   );
@@ -60,7 +60,7 @@ const RequestsList = () => {
   return (
     <>
       {friendRequests.map((el, idx) => {
-        return <FriendRequestElement key={idx} {...el.sender} id={el._id} />;
+        return <FriendRequestElement key={idx} {...el} />;
       })}
     </>
   );

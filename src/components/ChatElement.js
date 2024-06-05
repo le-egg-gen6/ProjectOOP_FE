@@ -60,7 +60,7 @@ const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
   return (
     <StyledChatBox
       onClick={() => {
-        dispatch(SelectConversation({ conversationId: id }));
+        // dispatch(SelectConversation({ conversationId: id }));
       }}
       sx={{
         width: "100%",

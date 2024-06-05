@@ -23,7 +23,7 @@ import { socket } from "../../socket";
 const Conversation = ({ menu }) => {
   const dispatch = useDispatch();
 
-  const { conversations, currenMessages } = useSelector(
+  const { conversations, currentMessages } = useSelector(
     (state) => state.conversation
   );
   const { conversationId } = useSelector((state) => state.app);
@@ -42,46 +42,7 @@ const Conversation = ({ menu }) => {
   return (
     <Box p={3}>
       <Stack spacing={3}>
-        {Chat_History.map((el, idx) => {
-          switch (el.type) {
-            case "divider":
-              return (
-                // Timeline
-                <Timeline el={el} />
-              );
-
-            case "msg":
-              switch (el.subtype) {
-                case "img":
-                  return (
-                    // Media Message
-                    <MediaMsg el={el} menu={menu} />
-                  );
-
-                case "Link":
-                  return (
-                    //  Link Message
-                    <LinkMsg el={el} menu={menu} />
-                  );
-
-                case "reply":
-                  return (
-                    //  ReplyMessage
-                    <ReplyMsg el={el} menu={menu} />
-                  );
-
-                default:
-                  return (
-                    // Text Message
-                    <TextMsg el={el} menu={menu} />
-                  );
-              }
-
-            default:
-              return <></>;
-          }
-        })}
-        {Shared_docs.map((el, idx) => {
+        {currentMessages.map((el, idx) => {
           switch (el.type) {
             case "divider":
               return (

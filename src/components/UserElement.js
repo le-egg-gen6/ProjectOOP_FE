@@ -47,7 +47,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const UserElement = ({ userId, imageUrl, fullName, username }) => {
+const UserElement = ({ userId, avatarUrl, fullName, username }) => {
   const theme = useTheme();
 
   return (
@@ -73,7 +73,7 @@ const UserElement = ({ userId, imageUrl, fullName, username }) => {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             variant="dot"
           >
-            <Avatar alt={fullName} src={imageUrl} />
+            <Avatar alt={fullName} src={avatarUrl} />
           </StyledBadge>
           <Stack spacing={0.3}>
             <Typography variant="subtitle1">{fullName}</Typography>
@@ -98,8 +98,8 @@ const UserElement = ({ userId, imageUrl, fullName, username }) => {
 
 const FriendRequestElement = ({
   requestId,
-  userId,
-  imageUrl,
+  senderId,
+  avatarUrl,
   fullName,
   username,
 }) => {
@@ -123,7 +123,7 @@ const FriendRequestElement = ({
       >
         <Stack direction="row" alignItems={"center"} spacing={2}>
           {" "}
-          <Avatar alt={fullName} src={imageUrl} />
+          <Avatar alt={fullName} src={avatarUrl} />
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{ }</Typography>
           </Stack>
@@ -151,7 +151,7 @@ const FriendRequestElement = ({
 
 const FriendElement = ({
   userId,
-  imageUrl,
+  avatarUrl,
   fullName,
   username,
 }) => {
@@ -180,7 +180,7 @@ const FriendElement = ({
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             variant="dot"
           >
-            <Avatar alt={fullName} src={imageUrl} />
+            <Avatar alt={fullName} src={avatarUrl} />
           </StyledBadge>
           <Stack spacing={0.3}>
             <Typography variant="subtitle1">{fullName}</Typography>

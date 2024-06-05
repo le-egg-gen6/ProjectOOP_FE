@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import axios from "../../utils/axios";
-import { showSnackbar } from "./app";
+import { LogoutForAppRedux, showSnackbar } from "./app";
 
 // ----------------------------------------------------------------------
 
@@ -32,9 +32,13 @@ const slice = createSlice({
     },
     signOut(state, action) {
       state.isLoggedIn = false;
-      state.isVerified = false;
       state.token = "";
+      state.isLoading = false;
+      state.isVerified = false;
+      state.error = false;
+      state.user = null;
       state.userId = null;
+      state.email = "";
     },
     updateEmail(state, action) {
       state.email = action.payload.email;
@@ -67,7 +71,7 @@ export function NewPassword(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        const success = response.data.isError === 0;
+        const success = response.data.success;
         if (success) {
           dispatch(
             showSnackbar({ severity: "success", message: response.data.message })
@@ -81,23 +85,21 @@ export function NewPassword(formValues) {
             showSnackbar({ severity: "error", message: response.data.message })
           );
         }
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: false })
-        );
       })
       .catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: true })
-        );
       });
+      dispatch(
+        slice.actions.updateIsLoading({ isLoading: false, error: false })
+      );
   };
 }
 
 export function ForgotPassword(formValues) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.updateIsLoading({ isLoading: true, error: false }));
+    
     dispatch(
       slice.actions.updateEmail({ email: formValues.email })
     )
@@ -115,7 +117,7 @@ export function ForgotPassword(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        const success = response.data.isError === 0;
+        const success = response.data.success;
         if (success) {
           dispatch(
             showSnackbar({ severity: "success", message: response.data.message })
@@ -126,17 +128,15 @@ export function ForgotPassword(formValues) {
             showSnackbar({ severity: "error", message: response.data.message })
           );
         }
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: false })
-        );
       })
       .catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: true })
-        );
+        
       });
+      dispatch(
+        slice.actions.updateIsLoading({ isLoading: false, error: true })
+      );
   };
 }
 
@@ -160,42 +160,36 @@ export function LoginUser(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        const success = response.data.isError === 0;
+        const success = response.data.success;
         if (success) {
           dispatch(
             showSnackbar({ severity: "success", message: response.data.message })
           );
           dispatch(
-            slice.actions.updateIsLoading({ isLoading: false, error: false })
-          );
-          dispatch(
             slice.actions.logIn({
               isLoggedIn: true,
-              token: response.data.token,
-              userId: response.data.userId,
-              isVerified: response.data.isVerified === 0 ? true : false,
+              token: response.data.data.accessToken,
+              userId: response.data.data.userId,
+              isVerified: response.data.data.isVerified === 0 ? true : false,
             })
           );
         } else {
           dispatch(
-            showSnackbar({ severity: "error", message: response.data.errorMessage })
-          );
-          dispatch(
-            slice.actions.updateIsLoading({ isLoading: false, error: false })
+            showSnackbar({ severity: "error", message: response.data.message })
           );
         }
       })
       .catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: true })
-        );
       });
+      dispatch(
+        slice.actions.updateIsLoading({ isLoading: false, error: false })
+      );
   };
 }
 
-export function LogoutUser() {
+export function LogoutForAuthRedux() {
   return async (dispatch, getState) => {
     await axios
       .get(
@@ -209,12 +203,13 @@ export function LogoutUser() {
       ).then(
         function (response) {
           console.log(response);
-          var success = response.data.isError === 0;
+          const success = response.data.success;
           if (success) {
             dispatch(
               showSnackbar({ severity: "success", message: response.data.message })
             );
             dispatch(slice.actions.signOut());
+            dispatch(LogoutForAppRedux());
           } else {
             dispatch(
               showSnackbar({ severity: "error", message: response.data.message })
@@ -224,9 +219,6 @@ export function LogoutUser() {
       ).catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ error: true, isLoading: false })
-        );
       });
   };
 }
@@ -249,41 +241,34 @@ export function RegisterUser(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        const success = response.data.isError === 0;
+        const success = response.data.success;
         if (success) {
           dispatch(
             showSnackbar({ severity: "success", message: response.data.message })
           );
 
           dispatch(
-            slice.actions.updateIsLoading({ isLoading: false, error: false })
-          );
-
-          dispatch(
             slice.actions.logIn({
               isLoggedIn: true,
-              token: response.data.token,
-              userId: response.data.userId,
-              isVerified: response.data.isVerified === 0 ? true : false,
+              token: response.data.data.accessToken,
+              userId: response.data.data.userId,
+              isVerified: response.data.data.isVerified === 0 ? true : false,
             })
           )
 
         } else {
           dispatch(
-            showSnackbar({ severity: "error", message: response.data.errorMessage })
-          );
-          dispatch(
-            slice.actions.updateIsLoading({ isLoading: false, error: true })
+            showSnackbar({ severity: "error", message: response.data.message })
           );
         }
       })
       .catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: true })
-        );
       });
+      dispatch(
+        slice.actions.updateIsLoading({ isLoading: false, error: false })
+      );
   };
 }
 
@@ -307,7 +292,7 @@ export function VerifyEmail(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        var success = response.data.isError === 0;
+        const success = response.data.success;
         if (success) {
           dispatch(
             showSnackbar({ severity: "success", message: response.data.message })
@@ -320,17 +305,14 @@ export function VerifyEmail(formValues) {
             showSnackbar({ severity: "error", message: response.data.message })
           );
         }
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: false })
-        );
       })
       .catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ error: true, isLoading: false })
-        );
       });
+      dispatch(
+        slice.actions.updateIsLoading({ isLoading: false, error: false })
+      );
   };
 }
 
@@ -353,7 +335,7 @@ export function ResendEmailOTP(formValues) {
       )
       .then(function (response) {
         console.log(response);
-        var success = response.data.isError === 0;
+        const success = response.data.success;
         if (success) {
           dispatch(
             showSnackbar({ severity: "success", message: response.data.message })
@@ -363,16 +345,13 @@ export function ResendEmailOTP(formValues) {
             showSnackbar({ severity: "error", message: response.data.message })
           );
         }
-        dispatch(
-          slice.actions.updateIsLoading({ isLoading: false, error: false })
-        );
       })
       .catch(function (error) {
         console.log(error);
         dispatch(showSnackbar({ severity: "error", message: "An error occured, please try again." }));
-        dispatch(
-          slice.actions.updateIsLoading({ error: true, isLoading: false })
-        );
       });
+      dispatch(
+        slice.actions.updateIsLoading({ isLoading: false, error: false })
+      );
   }
 }

@@ -5,7 +5,7 @@ import { faker } from "@faker-js/faker";
 
 import { Profile_Menu } from "../../data";
 import { useDispatch, useSelector } from "react-redux";
-import { LogoutUser } from "../../redux/slices/auth";
+import { LogoutForAuthRedux } from "../../redux/slices/auth";
 import { socket } from "../../socket";
 import { useNavigate } from "react-router-dom";
 
@@ -70,7 +70,7 @@ const ProfileMenu = () => {
                       navigate("/settings");
                     }
                     else {
-                      dispatch(LogoutUser());
+                      dispatch(LogoutForAuthRedux());
                       // socket.emit("end", {user_id});
                     }
                   }}
