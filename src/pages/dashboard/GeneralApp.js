@@ -14,7 +14,7 @@ const GeneralApp = () => {
 
   const theme = useTheme();
 
-  const { sideBar, conversationId, chat_type } = useSelector((state) => state.app);
+  const { sideBar, conversationId } = useSelector((state) => state.app);
 
   return (
     <>
@@ -37,7 +37,7 @@ const GeneralApp = () => {
                 : "6px solid #0162C4",
           }}
         >
-          {chat_type === "individual" && conversationId !== null ? (
+          {conversationId !== null ? (
             <ChatComponent />
           ) : (
             <Stack

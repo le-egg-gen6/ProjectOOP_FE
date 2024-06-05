@@ -14,7 +14,7 @@ import {
 
 const DashboardLayout = () => {
   const dispatch = useDispatch();
-  const { user_id } = useSelector((state) => state.auth);
+  const { userId } = useSelector((state) => state.auth);
   const { isLoggedIn, isVerified } = useSelector((state) => state.auth);
   const { currentConversation } = useSelector(
     (state) => state.conversation
@@ -29,23 +29,23 @@ const DashboardLayout = () => {
     if (isLoggedIn && isVerified) {
 
       if (!socket) {
-        connectSocket();
+        connectSocket(userId);
       }
 
-      socket.on("new_message", (data) => {
-        // check if msg we got is from currently selected conversation
-        if (currentConversation?.id === data.conversationId) {
-          dispatch(
-            AddMessage({
-              id: data.id,
-              type: data.type,
-              senderId: data.senderId,
-              content: data.content,
-              imageUrl: data.imageUrl,
-            })
-          );
-        }
-      });
+      // socket.on("new_message", (data) => {
+      //   // check if msg we got is from currently selected conversation
+      //   if (currentConversation?.id === data.conversationId) {
+      //     dispatch(
+      //       AddMessage({
+      //         id: data.id,
+      //         type: data.type,
+      //         senderId: data.senderId,
+      //         content: data.content,
+      //         imageUrl: data.imageUrl,
+      //       })
+      //     );
+      //   }
+      // });
     }
 
     // Remove event listener on component unmount
@@ -54,13 +54,13 @@ const DashboardLayout = () => {
     };
   }, [isLoggedIn, isVerified, socket]);
 
-  // if (!isLoggedIn) {
-  //   return <Navigate to={"/auth/login"} />;
-  // } else {
-  //   if (!isVerified) {
-  //     return <Navigate to={"/verify/account"} />
-  //   }
-  // }
+  if (!isLoggedIn) {
+    return <Navigate to={"/auth/login"} />;
+  } else {
+    if (!isVerified) {
+      return <Navigate to={"/verify/account"} />
+    }
+  }
   
   return (
     <>

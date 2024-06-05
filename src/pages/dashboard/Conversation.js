@@ -23,19 +23,19 @@ import { socket } from "../../socket";
 const Conversation = ({ menu }) => {
   const dispatch = useDispatch();
 
-  const { conversations, current_messages } = useSelector(
-    (state) => state.conversation.direct_chat
+  const { conversations, currenMessages } = useSelector(
+    (state) => state.conversation
   );
   const { conversationId } = useSelector((state) => state.app);
 
   useEffect(() => {
     const current = conversations.find((el) => el?.id === conversationId);
 
-    socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
-      // data => list of messages
-      console.log(data, "List of messages");
-      dispatch(FetchCurrentMessages({ messages: data }));
-    });
+    // socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
+    //   // data => list of messages
+    //   console.log(data, "List of messages");
+    //   dispatch(FetchCurrentMessages({ messages: data }));
+    // });
 
     dispatch(SetCurrentConversation(current));
   }, []);
@@ -130,14 +130,14 @@ const ChatComponent = () => {
 
   const messageListRef = useRef(null);
 
-  const { current_messages } = useSelector(
-    (state) => state.conversation.direct_chat
+  const { currentMessages } = useSelector(
+    (state) => state.conversation
   );
 
   useEffect(() => {
     // Scroll to the bottom of the message list when new messages are added
     messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
-  }, [current_messages]);
+  }, [currentMessages]);
 
   return (
     <Stack

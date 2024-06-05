@@ -35,7 +35,7 @@ const Chats = () => {
 
   const dispatch = useDispatch();
 
-  const { conversations } = useSelector((state) => state.conversation.direct_chat);
+  const { conversations } = useSelector((state) => state.conversation);
 
   useEffect(() => {
     dispatch(FetchConversations());

@@ -159,8 +159,8 @@ function containsUrl(text) {
 const Footer = () => {
   const theme = useTheme();
 
-  const { current_conversation } = useSelector(
-    (state) => state.conversation.direct_chat
+  const { currentConversation } = useSelector(
+    (state) => state.conversation
   );
 
   const user_id = window.localStorage.getItem("user_id");
@@ -251,13 +251,13 @@ const Footer = () => {
             >
               <IconButton
                 onClick={() => {
-                  socket.emit("text_message", {
-                    message: linkify(value),
-                    conversation_id: conversationId,
-                    from: user_id,
-                    to: current_conversation.user_id,
-                    type: containsUrl(value) ? "Link" : "Text",
-                  });
+                  // socket.emit("text_message", {
+                  //   message: linkify(value),
+                  //   conversation_id: conversationId,
+                  //   from: user_id,
+                  //   to: currentConversation.user_id,
+                  //   type: containsUrl(value) ? "Link" : "Text",
+                  // });
                 }}
               >
                 <PaperPlaneTilt color="#ffffff" />
