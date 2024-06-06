@@ -60,9 +60,6 @@ const slice = createSlice({
     updateUsers(state, action) {
       state.users = action.payload.users;
     },
-    updateAllUsers(state, action) {
-      state.allUsers = action.payload.allUsers;
-    },
     updateFriends(state, action) {
       state.friends = action.payload.friends;
     },
@@ -133,7 +130,7 @@ export function UpdateTab(tab) {
 };
 
 export function LogoutForAppRedux() {
-  return async(dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch(slice.actions.signOut());
   }
 }
@@ -194,20 +191,79 @@ export function FetchFriends() {
   };
 };
 
-export function SendFriendRequest(friend_id) {
+export function SendFriendRequest(receiverId) {
   return async (dispatch, getState) => {
     await axios.post(
-
-    ).then(
-
-    ).catch(
-
-    )
+      "/friend-request/send-friend-request",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`,
+        },
+      },
+      {
+        senderId: getState().app.user.userId,
+        receiverId: receiverId
+      }
+    ).then((response) => {
+      const success = response.data.success;
+      if (success) {
+        dispatch(showSnackbar({ severity: "success", message: response.data.message }))
+        var usersAfter = getState().app.users;
+        var i = 0;
+        while (i < usersAfter.length) {
+          if (usersAfter[i].userId === receiverId) {
+            usersAfter.splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+        dispatch(slice.actions.updateUsers({ users: usersAfter }));
+      } else {
+        dispatch(showSnackbar({ severity: "error", message: response.data.message }));
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 }
 
-export function AcceptFriendRequest(request_id) {
-
+export function AcceptFriendRequest(requestId, senderId) {
+  return async (dispatch, getState) => {
+    await axios.post(
+      "/friend-request/send-friend-request",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`,
+        },
+      },
+      {
+        requestId: requestId,
+        senderId: senderId,
+        receiverId: getState().app.user.userId
+      }
+    ).then((response) => {
+      const success = response.data.success;
+      if (success) {
+        dispatch(showSnackbar({ severity: "success", message: response.data.message }))
+        var friendRequestsAfter = getState().app.friendRequests;
+        var i = 0;
+        while (i < friendRequestsAfter.length) {
+          if (friendRequestsAfter[i].requestId === requestId) {
+            friendRequestsAfter.splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+        dispatch(slice.actions.updateFriendRequests({ requests : friendRequestsAfter }));
+      } else {
+        dispatch(showSnackbar({ severity: "error", message: response.data.message }));
+      }
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
 };
 
 export function FetchFriendRequests() {

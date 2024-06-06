@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as Yup from "yup";
 import {
   Box,
@@ -15,16 +15,31 @@ import { useForm } from "react-hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { RHFTextField } from "../../components/hook-form";
 import RHFAutocomplete from "../../components/hook-form/RHFAutocomplete";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { FetchFriends } from "../../redux/slices/app";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const test_friend = [
+  {fullName: "Nguyen Le"},
+  {fullName: "Ho Minh Quang"},
+  {fullName: "Ngo Trung Hieu"},
+  {fullName: "Phan Minh Quang"},
+  {fullName: "Do The Quan"},
+  {fullName: "Pham Duc Giang"},
+]
 
 const CreateGroupForm = ({ handleClose }) => {
+
+  const dispatch = useDispatch();
   
-  const { friends } = useSelector((state) => state.app.friends);
+  const { friends } = useSelector((state) => state.app);
+
+  useEffect(() => {
+    dispatch(FetchFriends());
+  }, []);
 
   const NewGroupSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
@@ -34,7 +49,6 @@ const CreateGroupForm = ({ handleClose }) => {
 
   const defaultValues = {
     title: "",
-
     tags: [],
   };
 
@@ -70,7 +84,7 @@ const CreateGroupForm = ({ handleClose }) => {
             label="Members"
             multiple
             freeSolo
-            options={friends.map((friend) => friend.fullName)}
+            options={test_friend.map((friend) => friend.fullName)}
             ChipProps={{ size: "medium" }}
           />
           <Stack

@@ -11,6 +11,8 @@ import {
 import { styled, useTheme } from "@mui/material/styles";
 import { Chat } from "phosphor-react";
 import { socket } from "../socket";
+import { useDispatch } from "react-redux";
+import { AcceptFriendRequest, SendFriendRequest } from "../redux/slices/app";
 
 const StyledChatBox = styled(Box)(({ theme }) => ({
   "&:hover": {
@@ -48,6 +50,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 const UserElement = ({ userId, avatarUrl, fullName, username }) => {
+  const dispatch = useDispatch();
+
   const theme = useTheme();
 
   return (
@@ -83,9 +87,7 @@ const UserElement = ({ userId, avatarUrl, fullName, username }) => {
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <Button
             onClick={() => {
-              // socket.emit("friend_request", { to: _id, from: user_id }, () => {
-              //   alert("request sent");
-              // });
+              dispatch(SendFriendRequest(userId));
             }}
           >
             Send Request
@@ -104,6 +106,8 @@ const FriendRequestElement = ({
   username,
 }) => {
   const theme = useTheme();
+
+  const dispatch = useDispatch();
 
   return (
     <StyledChatBox
@@ -135,8 +139,7 @@ const FriendRequestElement = ({
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <Button
             onClick={() => {
-              //  emit "accept_request" event
-              // socket.emit("accept_request", { request_id: id });
+              dispatch(AcceptFriendRequest(requestId, senderId));
             }}
           >
             Accept Request
