@@ -202,6 +202,33 @@ export const AddGroupConversation = (formValues) => {
   }
 }
 
+export const AddDirectConversation = ({friendId}) => {
+  return async (dispatch, getState) => {
+    await axios.post(
+      '/conversation/new-group',
+      {
+        "members": [getState().app.user.userId, friendId],
+        "type": "DIRECT"
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`
+        }
+      }
+    ).then(
+      function (response) {
+        dispatch(showSnackbar({ severity: "success", message: "Your friend are online, start chat now!" }));
+        dispatch(FetchDirectConversations());
+      }
+    ).catch(
+      (error) => {
+        dispatch(showSnackbar({ severity: "error", message: "An error occured while contact your friend, please try again!" }))
+      }
+    )
+  }
+}
+
 export const UpdateConversation = ({ conversation }) => {
   return async (dispatch, getState) => {
     dispatch(slice.actions.updateConversation({ conversation }));

@@ -10,8 +10,9 @@ import {
 } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import { Chat } from "phosphor-react";
-import { useDispatch } from "react-redux";
-import { AcceptFriendRequest, SendFriendRequest } from "../redux/slices/app";
+import { useDispatch, useSelector } from "react-redux";
+import { AcceptFriendRequest, SelectConversation, SendFriendRequest } from "../redux/slices/app";
+import { AddDirectConversation } from "../redux/slices/conversation";
 
 const StyledChatBox = styled(Box)(({ theme }) => ({
   "&:hover": {
@@ -152,12 +153,16 @@ const FriendRequestElement = ({
 // FriendElement
 
 const FriendElement = ({
-  userId,
+  friendId,
   avatarUrl,
   fullName,
   username,
 }) => {
   const theme = useTheme();
+
+  const dispatch = useDispatch();
+
+  const { directConversations } = useSelector((state) => state.conversation);
 
   return (
     <StyledChatBox
@@ -192,7 +197,14 @@ const FriendElement = ({
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <IconButton
             onClick={() => {
-              
+              for (let i = 0; i < directConversations.length; ++i) {
+                const conv = directConversations[i];
+                if (conv.participants[0].userId === friendId) {
+                  //
+                  return;
+                }
+              }
+              dispatch(AddDirectConversation({friendId: friendId}));
             }}
           >
             <Chat />
