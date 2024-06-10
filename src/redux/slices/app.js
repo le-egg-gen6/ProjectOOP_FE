@@ -196,14 +196,14 @@ export function SendFriendRequest(receiverId) {
     await axios.post(
       "/friend-request/send-friend-request",
       {
+        senderId: getState().app.user.userId,
+        receiverId: receiverId
+      },
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getState().auth.token}`,
         },
-      },
-      {
-        senderId: getState().app.user.userId,
-        receiverId: receiverId
       }
     ).then((response) => {
       const success = response.data.success;
@@ -231,17 +231,17 @@ export function SendFriendRequest(receiverId) {
 export function AcceptFriendRequest(requestId, senderId) {
   return async (dispatch, getState) => {
     await axios.post(
-      "/friend-request/send-friend-request",
+      "/friend-request/accept-friend-request",
+      {
+        requestId: requestId,
+        senderId: senderId,
+        receiverId: getState().app.user.userId
+      },
       {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getState().auth.token}`,
         },
-      },
-      {
-        requestId: requestId,
-        senderId: senderId,
-        receiverId: getState().app.user.userId
       }
     ).then((response) => {
       const success = response.data.success;
@@ -271,7 +271,6 @@ export function FetchFriendRequests() {
     await axios
       .get(
         "/friend-request/get-all-friend-request",
-
         {
           headers: {
             "Content-Type": "application/json",

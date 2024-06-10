@@ -6,7 +6,6 @@ import { faker } from "@faker-js/faker";
 import { Profile_Menu } from "../../data";
 import { useDispatch, useSelector } from "react-redux";
 import { LogoutForAuthRedux } from "../../redux/slices/auth";
-import { socket } from "../../socket";
 import { useNavigate } from "react-router-dom";
 
 const ProfileMenu = () => {
@@ -71,7 +70,6 @@ const ProfileMenu = () => {
                     }
                     else {
                       dispatch(LogoutForAuthRedux());
-                      // socket.emit("end", {user_id});
                     }
                   }}
                   sx={{ width: 100 }}

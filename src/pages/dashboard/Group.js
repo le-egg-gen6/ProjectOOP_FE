@@ -24,9 +24,7 @@ const Group = () => {
 
   const dispatch = useDispatch();
 
-  // const { conversations } = useSelector((state) => state.conversation.group_chat);
-
-  const conversations = [];
+  const { groupConversations } = useSelector((state) => state.conversation);
 
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -95,14 +93,14 @@ const Group = () => {
                     Pinned
                   </Typography>
                   {/* Chat List */}
-                  {ChatList.filter((el) => el.pinned).map((el, idx) => {
+                  {groupConversations.filter((el) => el.pinned).map((el, idx) => {
                     return <ChatElement {...el} />;
                   })}
                   <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                     All Chats
                   </Typography>
                   {/* Chat List */}
-                  {ChatList.filter((el) => !el.pinned).map((el, idx) => {
+                  {groupConversations.filter((el) => !el.pinned).map((el, idx) => {
                     return <ChatElement {...el} />;
                   })}
                 </Stack>

@@ -18,7 +18,6 @@ import {
   FetchCurrentMessages,
   SetCurrentConversation,
 } from "../../redux/slices/conversation";
-import { socket } from "../../socket";
 
 const Conversation = ({ menu }) => {
   const dispatch = useDispatch();

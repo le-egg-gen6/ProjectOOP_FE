@@ -5,7 +5,7 @@ import useResponsive from "../../hooks/useResponsive";
 import SideNav from "./SideNav";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchUserProfile, SelectConversation, showSnackbar } from "../../redux/slices/app";
-import { FetchConversations } from "../../redux/slices/conversation";
+import { FetchDirectConversations, FetchGroupConversations } from "../../redux/slices/conversation";
 import { socket, connectSocket } from "../../socket";
 import {
   UpdateConversation,
@@ -23,7 +23,8 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     dispatch(FetchUserProfile());
-    dispatch(FetchConversations());
+    dispatch(FetchDirectConversations());
+    dispatch(FetchGroupConversations());
   }, []);
 
 
@@ -34,25 +35,27 @@ const DashboardLayout = () => {
         connectSocket(userId);
       }
 
-      // socket.on("new_message", (data) => {
-      //   // check if msg we got is from currently selected conversation
-      //   if (currentConversation?.id === data.conversationId) {
-      //     dispatch(
-      //       AddMessage({
-      //         id: data.id,
-      //         type: data.type,
-      //         senderId: data.senderId,
-      //         content: data.content,
-      //         imageUrl: data.imageUrl,
-      //       })
-      //     );
-      //   }
-      // });
+      socket.on("new_message", (data) => {
+        // check if msg we got is from currently selected conversation
+        if (currentConversation?.id === data.conversationId) {
+          dispatch(
+            AddMessage({
+              id: data.id,
+              type: data.type,
+              senderId: data.senderId,
+              content: data.content,
+              imageUrl: data.imageUrl,
+            })
+          );
+        } else {
+          
+        }
+      });
     }
 
     // Remove event listener on component unmount
     return () => {
-      socket?.off("new_message");
+      socket?.disconnect();
     };
   }, [isLoggedIn, isVerified, socket]);
 

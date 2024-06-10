@@ -8,14 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  ArchiveBox,
   CircleDashed,
   MagnifyingGlass,
   Users,
 } from "phosphor-react";
 import { SimpleBarStyle } from "../../components/Scrollbar";
 import { useTheme } from "@mui/material/styles";
-import useResponsive from "../../hooks/useResponsive";
 import ChatElement from "../../components/ChatElement";
 import {
   Search,
@@ -23,10 +21,7 @@ import {
   StyledInputBase,
 } from "../../components/Search";
 import Friends from "../../sections/dashboard/Friends";
-import { socket } from "../../socket";
 import { useDispatch, useSelector } from "react-redux";
-import { FetchConversations } from "../../redux/slices/conversation";
-import { ChatList } from "../../data";
 
 const user_id = window.localStorage.getItem("user_id");
 
@@ -35,7 +30,7 @@ const Chats = () => {
 
   const dispatch = useDispatch();
 
-  const { conversations } = useSelector((state) => state.conversation);
+  const { directConversations } = useSelector((state) => state.conversation);
 
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -101,13 +96,13 @@ const Chats = () => {
                 <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                   Pinned
                 </Typography>
-                {conversations.filter((el) => el.pinned).map((el, idx) => {
+                {directConversations.filter((el) => el.pinned).map((el, idx) => {
                   return <ChatElement key={idx} {...el} />;
                 })}
                 <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                   All Chats
                 </Typography>
-                {conversations.filter((el) => !el.pinned).map((el, idx) => {
+                {directConversations.filter((el) => !el.pinned).map((el, idx) => {
                   return <ChatElement key={idx} {...el} />;
                 })}
               </Stack>

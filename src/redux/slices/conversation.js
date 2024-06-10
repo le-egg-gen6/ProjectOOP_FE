@@ -6,7 +6,8 @@ import { showSnackbar } from "./app";
 const userId = window.localStorage.getItem("userId");
 
 const initialState = {
-  conversations: [],
+  directConversations: [],
+  groupConversations: [],
   currentConversation: null,
   currentMessages: [],
 };
@@ -15,19 +16,49 @@ const slice = createSlice({
   name: "conversation",
   initialState,
   reducers: {
-    fetchConversations(state, action) {
+    fetchDirectConversations(state, action) {
       const list = action.payload.conversations.map((el) => {
         return {
           conversationId: el.conversationId,
-          participants: el?._id,
+          participants: el.participants.map(
+            (elm) => {
+              return {
+                userId: elm.userId,
+                username: elm.username,
+                fullName: elm.fullName,
+                avatarUrl: elm.avatarUrl,
+              }
+            }
+          ),
           name: el.name,
           avatarUrl: el.avatarUrl,
-          message: el.lastArrivedMessage.content, 
-          time: el.lastArrivedMessage.createdAt,
+          message: el.lastArrivedMessage,
           pinned: false,
         };
       });
-      state.conversations = list;
+      state.directConversations = list;
+    },
+    fetchGroupConversations(state, action) {
+      const list = action.payload.conversations.map((el) => {
+        return {
+          conversationId: el.conversationId,
+          participants: el.participants.map(
+            (elm) => {
+              return {
+                userId: elm.userId,
+                username: elm.username,
+                fullName: elm.fullName,
+                avatarUrl: elm.avatarUrl,
+              }
+            }
+          ),
+          name: el.name,
+          avatarUrl: el.avatarUrl,
+          message: el.lastArrivedMessage,
+          pinned: el.pinned,
+        };
+      });
+      state.groupConversations = list;
     },
     updateConversation(state, action) {
       const this_conversation = action.payload.conversation;
@@ -37,7 +68,7 @@ const slice = createSlice({
             return el;
           } else {
             const user = this_conversation.participants.find(
-              (elm) => elm._id.toString() !== userId
+              (elm) => elm.userId !== userId
             );
             return {
               id: this_conversation._id._id,
@@ -100,10 +131,10 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export const FetchConversations = () => {
+export const FetchDirectConversations = () => {
   return async (dispatch, getState) => {
     await axios.get(
-      "/conversation/all",
+      "/conversation/all-direct-conversation",
       {
         headers: {
           "Content-Type": "application/json",
@@ -112,13 +143,34 @@ export const FetchConversations = () => {
       },
     ).then(
       function (response) {
-        dispatch(slice.actions.fetchConversations({conversations: response.data}));
+        dispatch(slice.actions.fetchDirectConversations({ conversations: response.data.data }));
       }
     ).catch(
-      dispatch(showSnackbar({severity: "error", message: "An error occured while fetch conversation, please reload page!"}))
+      dispatch(showSnackbar({ severity: "error", message: "An error occured while fetch conversation, please reload page!" }))
     )
   };
 };
+
+export const FetchGroupConversations = () => {
+  return async (dispatch, getState) => {
+    await axios.get(
+      "/conversation/all-group-conversation",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`
+        }
+      },
+    ).then(
+      function (response) {
+        dispatch(slice.actions.fetchGroupConversations({ conversations: response.data.data }));
+      }
+    ).catch(
+      dispatch(showSnackbar({ severity: "error", message: "An error occured while fetch conversation, please reload page!" }))
+    )
+  };
+};
+
 export const AddConversation = ({ conversation }) => {
   return async (dispatch, getState) => {
     dispatch(slice.actions.addConversation({ conversation }));
@@ -137,14 +189,14 @@ export const SetCurrentConversation = (currentConversation) => {
 };
 
 
-export const FetchCurrentMessages = ({messages}) => {
-  return async(dispatch, getState) => {
-    dispatch(slice.actions.fetchCurrentMessages({messages}));
+export const FetchCurrentMessages = ({ messages }) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.fetchCurrentMessages({ messages }));
   }
 }
 
 export const AddMessage = (message) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.addMessage({message}));
+    dispatch(slice.actions.addMessage({ message }));
   }
 }
