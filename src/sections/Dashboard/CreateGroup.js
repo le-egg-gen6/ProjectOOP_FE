@@ -17,39 +17,27 @@ import { RHFTextField } from "../../components/hook-form";
 import RHFAutocomplete from "../../components/hook-form/RHFAutocomplete";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchFriends } from "../../redux/slices/app";
+import { AddGroupConversation } from "../../redux/slices/conversation";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const test_friend = [
-  {fullName: "Nguyen Le"},
-  {fullName: "Ho Minh Quang"},
-  {fullName: "Ngo Trung Hieu"},
-  {fullName: "Phan Minh Quang"},
-  {fullName: "Do The Quan"},
-  {fullName: "Pham Duc Giang"},
-]
 
 const CreateGroupForm = ({ handleClose }) => {
 
   const dispatch = useDispatch();
   
-  const { friends } = useSelector((state) => state.app);
-
-  useEffect(() => {
-    dispatch(FetchFriends());
-  }, []);
+  const { user, friends } = useSelector((state) => state.app);
 
   const NewGroupSchema = Yup.object().shape({
-    title: Yup.string().required("Title is required"),
-
+    name: Yup.string().required("Title is required"),
     members: Yup.array().min(2, "Must have at least 2 members"),
   });
 
   const defaultValues = {
-    title: "",
-    tags: [],
+    name: "",
+    members: [user.userId + ": " + user.fullName],
   };
 
   const methods = useForm({
@@ -65,10 +53,10 @@ const CreateGroupForm = ({ handleClose }) => {
     formState: { isSubmitting, isValid },
   } = methods;
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formValues) => {
     try {
-      //  API Call
-      console.log("DATA", data);
+      dispatch(AddGroupConversation(formValues))
+      // console.log("DATA", data);
     } catch (error) {
       console.error(error);
     }
@@ -78,13 +66,13 @@ const CreateGroupForm = ({ handleClose }) => {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Box sx={{ p: 1 }}>
         <Stack spacing={3}>
-          <RHFTextField name="title" label="Title" />
+          <RHFTextField name="name" label="Name" />
           <RHFAutocomplete
             name="members"
             label="Members"
             multiple
             freeSolo
-            options={test_friend.map((friend) => friend.fullName)}
+            options={friends.map((friend) => friend.friendId + ": " + friend.fullName)}
             ChipProps={{ size: "medium" }}
           />
           <Stack

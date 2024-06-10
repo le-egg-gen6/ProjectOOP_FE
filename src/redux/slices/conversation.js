@@ -146,7 +146,9 @@ export const FetchDirectConversations = () => {
         dispatch(slice.actions.fetchDirectConversations({ conversations: response.data.data }));
       }
     ).catch(
-      dispatch(showSnackbar({ severity: "error", message: "An error occured while fetch conversation, please reload page!" }))
+      (error) => {
+        dispatch(showSnackbar({ severity: "error", message: "An error occured while fetch conversation, please reload page!" }));
+      }
     )
   };
 };
@@ -166,16 +168,40 @@ export const FetchGroupConversations = () => {
         dispatch(slice.actions.fetchGroupConversations({ conversations: response.data.data }));
       }
     ).catch(
-      dispatch(showSnackbar({ severity: "error", message: "An error occured while fetch conversation, please reload page!" }))
+      (error) => {
+        dispatch(showSnackbar({ severity: "error", message: "An error occured while fetch conversation, please reload page!" }));
+      }
     )
   };
 };
 
-export const AddConversation = ({ conversation }) => {
+export const AddGroupConversation = (formValues) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.addConversation({ conversation }));
-  };
-};
+    await axios.post(
+      '/conversation/new-group',
+      {
+        ...formValues,
+        "type": "GROUP"
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`
+        }
+      }
+    ).then(
+      function (response) {
+        dispatch(showSnackbar({ severity: "success", message: "Group created successfully!" }));
+        dispatch(FetchGroupConversations());
+      }
+    ).catch(
+      (error) => {
+        dispatch(showSnackbar({ severity: "error", message: "An error occured while create group, please try again!" }))
+      }
+    )
+  }
+}
+
 export const UpdateConversation = ({ conversation }) => {
   return async (dispatch, getState) => {
     dispatch(slice.actions.updateConversation({ conversation }));
