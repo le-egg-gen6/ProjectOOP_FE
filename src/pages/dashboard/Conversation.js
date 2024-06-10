@@ -22,13 +22,13 @@ import {
 const Conversation = ({ menu }) => {
   const dispatch = useDispatch();
 
-  const { conversations, currentMessages } = useSelector(
+  const { directConversations, currentMessages } = useSelector(
     (state) => state.conversation
   );
-  const { conversationId } = useSelector((state) => state.app);
+  const { selectedConversationId } = useSelector((state) => state.app);
 
   useEffect(() => {
-    const current = conversations.find((el) => el?.id === conversationId);
+    const current = directConversations.find((el) => el?.conversationId === selectedConversationId);
 
     // socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
     //   // data => list of messages

@@ -44,14 +44,13 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
+const ChatElement = ({ conversationId, name, avatarUrl, message }) => {
   const dispatch = useDispatch();
-  const { conversationId } = useSelector((state) => state.app);
-  const selectedChatId = conversationId?.toString();
+  const { selectedConversationId } = useSelector((state) => state.app);
 
-  let isSelected = +selectedChatId === id;
+  let isSelected = conversationId === selectedConversationId;
 
-  if (!selectedChatId) {
+  if (!selectedConversationId) {
     isSelected = false;
   }
 
@@ -60,7 +59,7 @@ const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
   return (
     <StyledChatBox
       onClick={() => {
-        // dispatch(SelectConversation({ conversationId: id }));
+        dispatch(SelectConversation({ selectedConversationId: conversationId }));
       }}
       sx={{
         width: "100%",
@@ -89,17 +88,17 @@ const ChatElement = ({ img, name, msg, time, unread, online, id }) => {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             variant="dot"
           >
-            <Avatar alt={name} src={img} />
+            <Avatar alt={name} src={avatarUrl} />
           </StyledBadge>
 
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{name}</Typography>
-            <Typography variant="caption">{truncateText(msg, 20)}</Typography>
+            <Typography variant="caption">{truncateText(message?.content, 20)}</Typography>
           </Stack>
         </Stack>
         <Stack spacing={2} alignItems={"center"}>
           <Typography sx={{ fontWeight: 600 }} variant="caption">
-            {time}
+            {message?.createdAt}
           </Typography>
         </Stack>
       </Stack>

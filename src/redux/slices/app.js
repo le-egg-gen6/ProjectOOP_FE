@@ -19,7 +19,7 @@ const initialState = {
   users: [], // all users of app who are not friends and not requested yet
   friends: [], // all friends
   friendRequests: [], // all friend requests
-  conversationId: null,
+  selectedConversationId: null,
 };
 
 const slice = createSlice({
@@ -66,7 +66,7 @@ const slice = createSlice({
       state.friendRequests = action.payload.requests;
     },
     selectConversation(state, action) {
-      state.conversationId = action.payload.conversationId;
+      state.selectedConversationId = action.payload.selectedConversationId;
     },
     signOut(state, action) {
       state.user = {};
@@ -83,7 +83,7 @@ const slice = createSlice({
       state.users = []; // all users of app who are not friends and not requested yet
       state.friends = []; // all friends
       state.friendRequests = []; // all friend requests
-      state.conversationId = null;
+      state.selectedConversationId = null;
     }
   },
 });
@@ -294,9 +294,9 @@ export function FetchFriendRequests() {
   };
 };
 
-export const SelectConversation = ({ conversationId }) => {
+export const SelectConversation = ({ selectedConversationId }) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.selectConversation({ conversationId }));
+    dispatch(slice.actions.selectConversation({ selectedConversationId }));
   };
 };
 

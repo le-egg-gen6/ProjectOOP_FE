@@ -200,7 +200,7 @@ const FriendElement = ({
               for (let i = 0; i < directConversations.length; ++i) {
                 const conv = directConversations[i];
                 if (conv.participants[0].userId === friendId) {
-                  //
+                  SelectConversation({conversationId: conv.conversationId})
                   return;
                 }
               }
