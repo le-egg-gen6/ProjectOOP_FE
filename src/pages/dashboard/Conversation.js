@@ -22,13 +22,18 @@ import {
 const Conversation = ({ menu }) => {
   const dispatch = useDispatch();
 
-  const { directConversations, currentMessages } = useSelector(
+  const { directConversations, groupConversations, currentMessages } = useSelector(
     (state) => state.conversation
   );
-  const { selectedConversationId } = useSelector((state) => state.app);
+  const { selectedConversationId, tab } = useSelector((state) => state.app);
 
   useEffect(() => {
-    const current = directConversations.find((el) => el?.conversationId === selectedConversationId);
+    var current;
+    if (tab === 0) {
+      current = directConversations.find((el) => el?.conversationId === selectedConversationId);
+    } else if (tab === 1) {
+      current = groupConversations.find((el) => el?.conversationId === selectedConversationId);
+    }
 
     // socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
     //   // data => list of messages

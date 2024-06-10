@@ -18,13 +18,24 @@ import {
   StyledInputBase,
 } from "../../components/Search";
 import CreateGroup from "../../sections/dashboard/CreateGroup";
-import { ChatList } from "../../data";
+import ChatComponent from "./Conversation";
 
 const Group = () => {
 
   const dispatch = useDispatch();
 
   const { groupConversations } = useSelector((state) => state.conversation);
+
+  const { sideBar, selectedConversationId } = useSelector((state) => state.app);
+
+  let isGroupTab = false;
+
+  for (let i = 0; i < groupConversations.length; ++i) {
+    if (groupConversations[i].conversationId === selectedConversationId) {
+      isGroupTab = true;
+      break;
+    }
+  }
 
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -110,6 +121,43 @@ const Group = () => {
         </Box>
 
         {/* Right */}
+        <Box
+          sx={{
+            height: "100%",
+            width: sideBar.open
+              ? `calc(100vw - 740px )`
+              : "calc(100vw - 420px )",
+            backgroundColor:
+              theme.palette.mode === "light"
+                ? "#FFF"
+                : theme.palette.background.paper,
+          }}
+        >
+          {isGroupTab ? (
+            <ChatComponent />
+          ) : (
+            <Stack
+              spacing={2}
+              sx={{ height: "100%", width: "100%" }}
+              alignItems="center"
+              justifyContent={"center"}
+            >
+              {/* <NoChat /> */}
+              <Typography variant="subtitle2">
+                Select a conversation or start a{" "}
+                <Link
+                  style={{
+                    color: theme.palette.primary.main,
+                    textDecoration: "none",
+                  }}
+                  to="/"
+                >
+                  new one
+                </Link>
+              </Typography>
+            </Stack>
+          )}
+        </Box>
       </Stack>
       {openDialog && <CreateGroup open={openDialog} handleClose={handleCloseDialog} />}
     </>

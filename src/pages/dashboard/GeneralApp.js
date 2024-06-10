@@ -2,19 +2,27 @@ import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { Box, Stack, Typography } from "@mui/material";
 
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ChatComponent from "./Conversation";
 import Chats from "./Chats";
 import Contact from "../../sections/dashboard/Contact";
-// import NoChat from "../../assets/illustration/NoChat";
 import { useSelector } from "react-redux";
 
 const GeneralApp = () => {
-  const [searchParams] = useSearchParams();
-
   const theme = useTheme();
 
-  const { sideBar, conversationId } = useSelector((state) => state.app);
+  const { sideBar, selectedConversationId } = useSelector((state) => state.app);
+
+  const { directConversations } = useSelector((state) => state.conversation);
+
+  let isDirectTab = false;
+
+  for (let i = 0; i < directConversations.length; ++i) {
+    if (directConversations[i].conversationId === selectedConversationId) {
+      isDirectTab = true;
+      break;
+    }
+  }
 
   return (
     <>
@@ -30,14 +38,9 @@ const GeneralApp = () => {
               theme.palette.mode === "light"
                 ? "#FFF"
                 : theme.palette.background.paper,
-            borderBottom:
-              searchParams.get("type") === "individual-chat" &&
-                searchParams.get("id")
-                ? "0px"
-                : "6px solid #0162C4",
           }}
         >
-          {conversationId !== null ? (
+          {isDirectTab ? (
             <ChatComponent />
           ) : (
             <Stack
