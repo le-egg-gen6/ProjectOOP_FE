@@ -4,12 +4,10 @@ import { Navigate, Outlet } from "react-router-dom";
 import useResponsive from "../../hooks/useResponsive";
 import SideNav from "./SideNav";
 import { useDispatch, useSelector } from "react-redux";
-import { FetchUserProfile, SelectConversation, showSnackbar } from "../../redux/slices/app";
+import { FetchUserProfile } from "../../redux/slices/app";
 import { FetchDirectConversations, FetchGroupConversations } from "../../redux/slices/conversation";
 import { socket, connectSocket } from "../../socket";
 import {
-  UpdateConversation,
-  AddConversation,
   AddMessage,
 } from "../../redux/slices/conversation";
 
@@ -37,25 +35,23 @@ const DashboardLayout = () => {
 
       socket.on("new_message", (data) => {
         // check if msg we got is from currently selected conversation
-        if (currentConversation?.id === data.conversationId) {
-          dispatch(
-            AddMessage({
-              id: data.id,
-              type: data.type,
-              senderId: data.senderId,
-              content: data.content,
-              imageUrl: data.imageUrl,
-            })
-          );
-        } else {
-          
-        }
+        dispatch(
+          AddMessage({
+            id: data.messageId,
+            type: data.type,
+            subtype: data.subtype,
+            senderId: data.senderId,
+            conversationId: data.conversationId,
+            content: data.content,
+            imageUrl: data.imageUrl,
+          })
+        );
       });
     }
 
     // Remove event listener on component unmount
     return () => {
-      socket?.disconnect();
+      socket?.off("new_message");
     };
   }, [isLoggedIn, isVerified, socket]);
 
@@ -66,7 +62,7 @@ const DashboardLayout = () => {
       return <Navigate to={"/verify/account"} />
     }
   }
-  
+
   return (
     <>
       <Stack direction="row">

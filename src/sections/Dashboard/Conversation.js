@@ -15,8 +15,7 @@ import { Link } from "react-router-dom";
 import truncateString from "../../utils/truncate";
 import { LinkPreview } from "@dhaiwat10/react-link-preview";
 import Embed from "react-embed";
-
-const userId = window.localStorage.getItem("userId");
+import { useSelector } from "react-redux";
 
 const MessageOption = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -58,6 +57,7 @@ const MessageOption = () => {
 
 const TextMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const { userId } = useSelector((state) => state.app.user);
   const incoming = el.senderId !== userId;
   return (
     <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
@@ -76,7 +76,7 @@ const TextMsg = ({ el, menu }) => {
           variant="body2"
           color={incoming ? theme.palette.text : "#fff"}
         >
-          {el.message}
+          {el.content}
         </Typography>
       </Box>
       {menu && <MessageOption />}
@@ -85,6 +85,7 @@ const TextMsg = ({ el, menu }) => {
 };
 const MediaMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const { userId } = useSelector((state) => state.app.user);
   const incoming = el.senderId !== userId;
   return (
     <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
@@ -120,6 +121,7 @@ const MediaMsg = ({ el, menu }) => {
 
 const LinkMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const { userId } = useSelector((state) => state.app.user);
   const incoming = el.senderId !== userId;
   return (
     <Stack direction="row" justifyContent={incoming ? "start" : "end"}>
@@ -167,6 +169,7 @@ const LinkMsg = ({ el, menu }) => {
 };
 const ReplyMsg = ({ el, menu }) => {
   const theme = useTheme();
+  const { userId } = useSelector((state) => state.app.user);
   const incoming = el.senderId !== userId;
   return (
     <Stack direction="row" justifyContent={incoming ? "start" : "end"}>

@@ -20,7 +20,7 @@ import {
 import { useTheme, styled } from "@mui/material/styles";
 import React, { useRef, useState } from "react";
 import useResponsive from "../../hooks/useResponsive";
-
+import {socket} from "../../socket"
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useSelector } from "react-redux";
@@ -162,9 +162,11 @@ const Footer = () => {
     (state) => state.conversation
   );
 
-  const user_id = window.localStorage.getItem("user_id");
+  const {userId} = useSelector(
+    (state) => state.app.user
+  );
 
-  const { sideBar, conversationId } = useSelector((state) => state.app);
+  const { sideBar, selectedConversationId } = useSelector((state) => state.app);
 
   const [openPicker, setOpenPicker] = React.useState(false);
 
@@ -250,13 +252,12 @@ const Footer = () => {
             >
               <IconButton
                 onClick={() => {
-                  // socket.emit("text_message", {
-                  //   message: linkify(value),
-                  //   conversation_id: conversationId,
-                  //   from: user_id,
-                  //   to: currentConversation.user_id,
-                  //   type: containsUrl(value) ? "Link" : "Text",
-                  // });
+                  socket.emit("send_message", {
+                    content: linkify(value),
+                    conversationId: selectedConversationId,
+                    senderId: userId,
+                    type: containsUrl(value) ? "LINK" : "TEXT",
+                  });
                 }}
               >
                 <PaperPlaneTilt color="#ffffff" />

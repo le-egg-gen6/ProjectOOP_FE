@@ -38,7 +38,7 @@
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "simplebar-react": "^2.4.3",
-    "socket.io-client": "^4.7.5",
+    "socket.io-client": "^2.5.0",
     "sockjs-client": "^1.6.1",
     "stylis-plugin-rtl": "^2.0.2",
     "uuidv4": "^6.2.13",

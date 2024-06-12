@@ -40,6 +40,7 @@ const Conversation = ({ menu }) => {
     //   console.log(data, "List of messages");
     //   dispatch(FetchCurrentMessages({ messages: data }));
     // });
+    dispatch(FetchCurrentMessages(selectedConversationId));
 
     dispatch(SetCurrentConversation(current));
   }, []);

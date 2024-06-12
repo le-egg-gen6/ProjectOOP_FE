@@ -111,12 +111,11 @@ const slice = createSlice({
     fetchCurrentMessages(state, action) {
       const messages = action.payload.messages;
       const formatted_messages = messages.map((el) => ({
-        id: el._id,
-        type: "msg",
-        subtype: el.type,
-        message: el.text,
-        incoming: el.to === userId,
-        outgoing: el.from === userId,
+        id: el.mesaageId,
+        type: el.type,
+        subtype: el.subtype,
+        content: el.content,
+        senderId: el.senderId
       }));
       state.currentMessages = formatted_messages;
     },
@@ -242,9 +241,28 @@ export const SetCurrentConversation = (currentConversation) => {
 };
 
 
-export const FetchCurrentMessages = ({ messages }) => {
+export const FetchCurrentMessages = (conversationId) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.fetchCurrentMessages({ messages }));
+    await axios.get(
+      "/conversation/all-message",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`
+        },
+        params: {
+          "conversationId": conversationId
+        }
+      }
+    ).then(
+      function (response) {
+        dispatch(slice.actions.fetchCurrentMessages({messages : response.data.data}));
+      }
+    ).catch(
+      (error) => {
+        dispatch(showSnackbar({severity: "error", message: "An error occured while fetch message, please reload page!"}));
+      }
+    )
   }
 }
 
