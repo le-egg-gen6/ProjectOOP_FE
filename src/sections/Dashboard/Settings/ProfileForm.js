@@ -23,7 +23,6 @@ const ProfileForm = () => {
     country: Yup.string().required("Country is required").nullable(true),
     city: Yup.string().required("City is required").nullable(true),
     address: Yup.string().required("Address is required").nullable(true),
-    avatar: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
@@ -33,7 +32,6 @@ const ProfileForm = () => {
     country: user?.country,
     city: user?.city,
     address: user?.address,
-    avatar: ``,
   };
 
   const methods = useForm({
@@ -64,7 +62,6 @@ const ProfileForm = () => {
           country: data.country,
           city: data.city,
           address: data.address,
-          avatar: file,
         })
       );
     } catch (error) {
@@ -72,28 +69,9 @@ const ProfileForm = () => {
     }
   };
 
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-
-      setFile(file);
-
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
-      if (file) {
-        setValue("avatar", newFile, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={4}>
-        <RHFUploadAvatar name="avatar" maxSize={3145728} onDrop={handleDrop} />
-
         <Stack direction={"row"} spacing={4}>
           <RHFTextField
             name="firstName"

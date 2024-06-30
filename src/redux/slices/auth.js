@@ -324,7 +324,7 @@ export function ResendEmailOTP(formValues) {
       .post(
         "/email-verification/resend",
         {
-
+          ...formValues
         },
         {
           headers: {

@@ -120,7 +120,32 @@ const slice = createSlice({
       state.currentMessages = formatted_messages;
     },
     addMessage(state, action) {
-      state.currentMessages.push(action.payload.message);
+      if (state.currentConversation.conversationId === action.payload.message.conversationId) {
+        state.currentMessages.push(action.payload.message);
+      } else {
+        state.directConversations = state.directConversations.map(
+          (el) => {
+            if (el?.conversationId !== this_conversation._id) {
+              return el;
+            } else {
+              const user = this_conversation.participants.find(
+                (elm) => elm.userId !== userId
+              );
+              return {
+                id: this_conversation._id._id,
+                userId: user?._id,
+                name: `${user?.firstName} ${user?.lastName}`,
+                online: user?.status === "Online",
+                img: faker.image.avatar(),
+                msg: faker.music.songName(),
+                time: "9:36",
+                unread: 0,
+                pinned: false,
+              };
+            }
+          }
+        );
+      }
     }
   },
 });

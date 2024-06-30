@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Avatar,
   Badge,
@@ -18,6 +18,7 @@ import { faker } from "@faker-js/faker";
 import useResponsive from "../../hooks/useResponsive";
 import { ToggleSidebar } from "../../redux/slices/app";
 import { useDispatch, useSelector } from "react-redux";
+import { FetchCurrentMessages } from "../../redux/slices/conversation";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -52,7 +53,13 @@ const ChatHeader = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
+  const { selectedConversationId } = useSelector((state) => state.app);
+
   const { currentConversation } = useSelector((state) => state.conversation);
+
+  useEffect(() => {
+
+  }, [selectedConversationId])
 
   return (
     <>
@@ -108,7 +115,7 @@ const ChatHeader = () => {
             spacing={3}
           >
             <IconButton>
-              <PhoneCall 
+              <PhoneCall
                 onClick={() => {
                   dispatch();
                 }}
@@ -116,7 +123,7 @@ const ChatHeader = () => {
             </IconButton>
             <Divider orientation="vertical" flexItem />
             <IconButton>
-              <VideoCamera 
+              <VideoCamera
                 onClick={() => {
                   dispatch();
                 }}

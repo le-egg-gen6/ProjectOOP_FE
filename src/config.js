@@ -3,9 +3,11 @@ import { PATH_DASHBOARD } from "./routes/paths";
 
 export const BE_PORT = 6789;
 
+export const WS_PORT = 6790;
+
 export const BASE_URL = `http://localhost:${BE_PORT}/api/v1`;
 
-export const WS_URL = `http://localhost:${BE_PORT}/ws`
+export const WS_URL = `http://localhost:${WS_PORT}/ws`
 
 export const IMAGE_DB_API_KEY = '66bcab386c278f7ace4ac92db51c0992';
 

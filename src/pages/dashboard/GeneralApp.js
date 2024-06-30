@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Box, Stack, Typography } from "@mui/material";
 
 import { Link } from "react-router-dom";
 import ChatComponent from "./Conversation";
 import Chats from "./Chats";
-import Contact from "../../sections/dashboard/Contact";
 import { useSelector } from "react-redux";
 
 const GeneralApp = () => {
   const theme = useTheme();
 
   const { sideBar, selectedConversationId } = useSelector((state) => state.app);
+
+  useEffect( () => {
+
+  }, [selectedConversationId])
 
   const { directConversations } = useSelector((state) => state.conversation);
 

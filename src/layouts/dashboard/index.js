@@ -42,6 +42,7 @@ const DashboardLayout = () => {
             subtype: data.subtype,
             senderId: data.senderId,
             conversationId: data.conversationId,
+            createdAt: data.createdAt,
             content: data.content,
             imageUrl: data.imageUrl,
           })

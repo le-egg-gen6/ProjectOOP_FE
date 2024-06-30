@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Stack,
@@ -27,6 +27,9 @@ const Group = () => {
   const { groupConversations } = useSelector((state) => state.conversation);
 
   const { sideBar, selectedConversationId } = useSelector((state) => state.app);
+
+  useEffect(() => {
+  }, [selectedConversationId])
 
   let isGroupTab = false;
 
@@ -150,7 +153,7 @@ const Group = () => {
                     color: theme.palette.primary.main,
                     textDecoration: "none",
                   }}
-                  to="/"
+                  to="/group"
                 >
                   new one
                 </Link>

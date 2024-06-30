@@ -22,8 +22,7 @@ import {
 } from "../../components/Search";
 import Friends from "../../sections/dashboard/Friends";
 import { useDispatch, useSelector } from "react-redux";
-
-const user_id = window.localStorage.getItem("user_id");
+import { FetchDirectConversations } from "../../redux/slices/conversation";
 
 const Chats = () => {
   const theme = useTheme();
@@ -40,6 +39,10 @@ const Chats = () => {
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
+
+  useEffect(() => {
+    dispatch(FetchDirectConversations());
+  }, []);
 
   return (
     <>

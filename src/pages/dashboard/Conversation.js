@@ -43,7 +43,8 @@ const Conversation = ({ menu }) => {
     dispatch(FetchCurrentMessages(selectedConversationId));
 
     dispatch(SetCurrentConversation(current));
-  }, []);
+  }, [selectedConversationId]);
+
   return (
     <Box p={3}>
       <Stack spacing={3}>
@@ -92,6 +93,8 @@ const Conversation = ({ menu }) => {
 };
 
 const ChatComponent = () => {
+  const dispatch = useDispatch();
+  
   const theme = useTheme();
 
   const messageListRef = useRef(null);

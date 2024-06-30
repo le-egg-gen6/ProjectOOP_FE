@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "../../utils/axios";
 import axiosImage from "../../utils/axiosImageDb";
 import { IMAGE_DB_API_KEY } from "../../config";
+import { SetCurrentConversation } from "./conversation";
+import { useSelector } from "react-redux";
 // ----------------------------------------------------------------------
 
 const initialState = {
@@ -255,7 +257,7 @@ export function AcceptFriendRequest(requestId, senderId) {
             ++i;
           }
         }
-        dispatch(slice.actions.updateFriendRequests({ requests : friendRequestsAfter }));
+        dispatch(slice.actions.updateFriendRequests({ requests: friendRequestsAfter }));
       } else {
         dispatch(showSnackbar({ severity: "error", message: response.data.message }));
       }
@@ -297,6 +299,7 @@ export function FetchFriendRequests() {
 export const SelectConversation = ({ selectedConversationId }) => {
   return async (dispatch, getState) => {
     dispatch(slice.actions.selectConversation({ selectedConversationId }));
+    dispatch(SetCurrentConversation());
   };
 };
 
@@ -326,41 +329,29 @@ export const FetchUserProfile = () => {
 
 export const UpdateUserProfile = (formValues) => {
   return async (dispatch, getState) => {
-    const file = formValues.avatar;
-    axiosImage.post(
-      "",
+
+    await axios.post(
+      "/user/update-me",
       {
-        params: {
-          key: IMAGE_DB_API_KEY,
-          image: file
-        }
+        userId: getState().app.user.userId,
+        ...formValues,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`,
+        },
       }
     ).then(
       (response) => {
-        axios.post(
-          "/user/update-me",
-          {
-            ...formValues,
-            avatarUrl: response.data.data.url,
-            avatarName: response.data.data.title,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${getState().auth.token}`,
-            },
-          }
-        )
-          .then((response) => {
-            console.log(response);
-            dispatch(slice.actions.updateUser({ user: response.data }));
-          })
-          .catch((err) => {
-            dispatch(showSnackbar({ severity: "error", message: "An error occured while update your details, please try again." }))
-          })
+        console.log(response);
+        dispatch(slice.actions.updateUser({ user: response.data.data }));
+        dispatch(showSnackbar({severity: "success", message: "User updated succesfully!"}))
       }
     ).catch(
-      dispatch(showSnackbar({ severity: "error", message: "An error occured while upload your avatar, please try again." }))
+      (error) => {
+        dispatch(showSnackbar({ severity: "error", message: "An error occured while update your profile, please try again." }));
+      }
     )
   };
 };
